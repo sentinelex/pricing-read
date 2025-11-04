@@ -69,7 +69,7 @@ For each refund item:
 - Refund **reverses the economic impact** of the original row. If the original increased the customer total (e.g., BaseFare, Tax, Markup), the refund amount must be **negative**. If the original decreased the customer total (e.g., Discount, Promo, Subsidy), the refund amount must be **positive**.
 - Order Core derives this from taxonomy (component_type → economic_direction ∈ {charge, credit}). Refund must flip the direction of the original.
 - `refund_of_component_semantic_id` **must** point to an **existing** semantic id in prior snapshots of the same `order_id`.
-- If the original used an **`optional_key`** (e.g., `funding_source=tiket`), the refund must **include the same key/value** in `meta` so Order Core can produce an identical `component_semantic_id`.
+- If the original used an **`optional_key`** (e.g., `funding_source=platform`), the refund must **include the same key/value** in `meta` so Order Core can produce an identical `component_semantic_id`.
 
 ### 3.2 Order Core → Storage (normalized)
 
@@ -264,7 +264,7 @@ LEFT JOIN refund_sum rs
   "amount": -100000,
   "currency": "IDR",
   "dimensions": { "order_detail_id": "OD-1" },
-  "meta": { "funding_source": "tiket" }
+  "meta": { "funding_source": "platform" }
 }
 ```
 
@@ -275,33 +275,33 @@ LEFT JOIN refund_sum rs
   "amount": 100000,
   "currency": "IDR",
   "dimensions": { "order_detail_id": "OD-1" },
-  "refund_of_component_semantic_id": "cs-ORD-1-OD-1-Subsidy-fs:tiket",
-  "meta": { "funding_source": "tiket", "reason": "refund_full" }
+  "refund_of_component_semantic_id": "cs-ORD-1-OD-1-Subsidy-fs:platform",
+  "meta": { "funding_source": "platform", "reason": "refund_full" }
 }
 ```
 
 **Stored rows (abbrev):**
 | version | component_semantic_id                         | amount   | is_refund |
 |--------:|----------------------------------------------|---------:|:---------:|
-| 1       | cs-ORD-1-OD-1-Subsidy-fs:tiket                | -100,000 |    0      |
-| 3       | cs-ORD-1-OD-1-Subsidy-fs:tiket                |  100,000 |    1      |
+| 1       | cs-ORD-1-OD-1-Subsidy-fs:platform             | -100,000 |    0      |
+| 3       | cs-ORD-1-OD-1-Subsidy-fs:platform             |  100,000 |    1      |
 
 **Net query (5.2)** ⇒ `0`.
 
 ### 6.2 Joint subsidy (two funders, same granularity)
 
 **v1 (original):**
-- `Subsidy` (tiket) `-50,000` → `meta.funding_source="tiket"`
+- `Subsidy` (platform) `-50,000` → `meta.funding_source="platform"`
 - `Subsidy` (supplier) `-25,000` → `meta.funding_source="supplier"`
 
 Order Core canonicals:
 ```
-cs-ORD-1-OD-1-...-Subsidy-fs:tiket
+cs-ORD-1-OD-1-...-Subsidy-fs:platform
 cs-ORD-1-OD-1-...-Subsidy-fs:supplier
 ```
 
-**v3 (refund tiket part only):**
-- Refund row carries **same optional_key** (`fs:tiket`), negative amount, and `refund_of_component_semantic_id` pointing to `...Subsidy-fs:tiket`.
+**v3 (refund platform part only):**
+- Refund row carries **same optional_key** (`fs:platform`), negative amount, and `refund_of_component_semantic_id` pointing to `...Subsidy-fs:platform`.
 
 ---
 

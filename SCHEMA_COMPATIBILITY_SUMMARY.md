@@ -232,7 +232,7 @@ Gross Margin (Markup):      IDR 469.42
 Affiliate Commission (10%): IDR 4,694.20
 VAT on Commission (11%):    IDR 516.36
 -------------------------------
-Net Revenue to Tiket:       IDR 41,731.44
+Net Revenue to Platform:    IDR 41,731.44
 
 Margin %: 16.01%
 Net Margin %: 14.23%

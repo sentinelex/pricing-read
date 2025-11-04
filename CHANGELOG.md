@@ -297,8 +297,8 @@ python test_b2b_real_files.py
     - Customer total, supplier cost, gross margin
     - Affiliate commission (10% of markup)
     - VAT on commission (11% of shareback)
-    - Net revenue to Tiket
-  - Entity context visualization (TNPL pricing entity, GTN supplier entity)
+    - Net revenue to Platform
+  - Entity context visualization (separate pricing and supplier entities)
   - Real order IDs from production (1200496236)
 
 - **Comprehensive Test Suite** ([test_b2b_affiliate.py](test_b2b_affiliate.py))

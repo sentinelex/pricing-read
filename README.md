@@ -1,6 +1,6 @@
 # Unified Pricing Read Layer (UPRL) Prototype
 
-An interactive Streamlit prototype demonstrating the **Unified Pricing Read Layer** architecture for Tiket.com's Order Platform.
+An interactive Streamlit prototype demonstrating the **Unified Pricing Read Layer** architecture for a travel e-commerce Order Platform.
 
 ## Overview
 
@@ -392,7 +392,7 @@ This is an educational prototype. For production implementation, consult:
 
 ## License
 
-Internal use - Tiket.com Order Platform team
+Educational and demonstration purposes - Open source
 
 ---
 

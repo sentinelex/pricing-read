@@ -268,7 +268,7 @@ New (1):
 3. **Deploy to GCP Cloud Run** (Option 2 - Production-like)
    - Build Docker image
    - Deploy to Cloud Run
-   - Setup custom domain: `uprl-demo.tiket.com`
+   - Setup custom domain: `uprl-demo.example.com`
 
 4. **Share with Stakeholders:**
    - Product managers for UI feedback

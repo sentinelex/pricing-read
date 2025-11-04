@@ -172,7 +172,7 @@ FINANCIAL SUMMARY
   Affiliate Commission (10%): IDR 46.94
   VAT on Commission (11%):    IDR 5.16
   -------------------------------
-  Net Revenue to Tiket:       IDR 417.32
+  Net Revenue to Platform:    IDR 417.32
 
   Margin %: 16.01%
   Net Margin %: 14.23%
@@ -192,7 +192,7 @@ FINANCIAL SUMMARY
 1. PRICING (Entity: TNPL)
    ┌─────────────────────────────────────────┐
    │ Affiliate Partner requests booking      │
-   │ Tiket.com calculates:                   │
+   │ Platform calculates:                    │
    │   - Supplier Net (NATIVE): IDR 2,462.81 │
    │   - Markup (B2B uplift):  + IDR 469.42  │
    │   ─────────────────────────────────────  │
@@ -229,11 +229,11 @@ FINANCIAL SUMMARY
 | Item | Amount (IDR) | Calculation | Notes |
 |------|--------------|-------------|-------|
 | **Customer Pays** | 2,932.23 | - | Paid by affiliate partner |
-| **Supplier Cost** | 2,462.81 | RoomRate | What Tiket pays NATIVE |
-| **Gross Margin** | 469.42 | Markup | Tiket's gross revenue |
+| **Supplier Cost** | 2,462.81 | RoomRate | What Platform pays NATIVE |
+| **Gross Margin** | 469.42 | Markup | Platform's gross revenue |
 | **Affiliate Commission** | 46.94 | 10% × Markup | Commission to affiliate |
 | **VAT on Commission** | 5.16 | 11% × Commission | Tax on shareback |
-| **Net Revenue** | 417.32 | Markup - Commission - VAT | Tiket's net revenue |
+| **Net Revenue** | 417.32 | Markup - Commission - VAT | Platform's net revenue |
 
 **Margin Analysis**:
 - **Gross Margin %**: 16.01% (469.42 / 2,932.23)
@@ -245,12 +245,12 @@ FINANCIAL SUMMARY
 **Why Two Entities?**
 
 ```
-TNPL (Tiket Nusantara Perkasa)
+ENTITY-A (Primary Trading Entity)
   └─ Pricing Entity
      └─ Issues customer invoice
      └─ Receives payment from affiliate
 
-GTN (Garuda Tiket Nusantara)
+ENTITY-B (Secondary Trading Entity)
   └─ Supplier Payable Entity
      └─ Owes payment to NATIVE supplier
      └─ Pays affiliate shareback + VAT

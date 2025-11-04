@@ -312,7 +312,7 @@ def test_b2b_affiliate_complete_flow():
     print(f"  Affiliate Commission (10%): IDR {shareback:,.2f}")
     print(f"  VAT on Commission (11%):    IDR {vat:,.2f}")
     print(f"  -------------------------------")
-    print(f"  Net Revenue to Tiket:       IDR {net_revenue:,.2f}")
+    print(f"  Net Revenue to Platform:    IDR {net_revenue:,.2f}")
 
     print(f"\n  Margin %: {(markup / customer_total) * 100:.2f}%")
     print(f"  Net Margin %: {(net_revenue / customer_total) * 100:.2f}%")
