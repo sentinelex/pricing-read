@@ -1,0 +1,141 @@
+{
+  "event_type": "PricingUpdated",
+  "schema_version": "pricing.commerce.v1",
+  "order_id": "ORD-MULTI-001",
+  "vertical": "accommodation",
+  "emitted_at": "2025-11-04T10:00:00Z",
+  "emitter_service": "accommodation-pricing-service",
+  "customer_context": {
+    "reseller_type_name": "B2C",
+    "reseller_id": null,
+    "reseller_name": null
+  },
+  "detail_contexts": [
+    {
+      "order_detail_id": "OD-001",
+      "entity_context": {
+        "entity_code": "TNPL"
+      },
+      "fx_context": {
+        "timestamp_fx_rate": "2025-11-04T10:00:00Z",
+        "payment_currency": "IDR",
+        "supply_currency": "IDR",
+        "record_currency": "IDR",
+        "gbv_currency": "IDR",
+        "payment_value": 500000,
+        "supply_to_payment_fx_rate": 1.0,
+        "supply_to_record_fx_rate": 1.0,
+        "payment_to_gbv_fx_rate": 1.0,
+        "source": "Treasury"
+      }
+    },
+    {
+      "order_detail_id": "OD-002",
+      "entity_context": {
+        "entity_code": "GTN"
+      },
+      "fx_context": {
+        "timestamp_fx_rate": "2025-11-04T10:00:00Z",
+        "payment_currency": "IDR",
+        "supply_currency": "USD",
+        "record_currency": "IDR",
+        "gbv_currency": "IDR",
+        "payment_value": 750000,
+        "supply_to_payment_fx_rate": 15000.0,
+        "supply_to_record_fx_rate": 15000.0,
+        "payment_to_gbv_fx_rate": 1.0,
+        "source": "Treasury"
+      }
+    }
+  ],
+  "components": [
+    {
+      "component_type": "RoomRate",
+      "amount": 400000,
+      "currency": "IDR",
+      "dimensions": {
+        "order_detail_id": "OD-001"
+      },
+      "description": "Standard Room - 2 nights",
+      "meta": {
+        "basis": "supplier_net",
+        "hotel_id": "HTL-123"
+      }
+    },
+    {
+      "component_type": "Tax",
+      "amount": 50000,
+      "currency": "IDR",
+      "dimensions": {
+        "order_detail_id": "OD-001"
+      },
+      "description": "Hotel Tax (TNPL entity)",
+      "meta": {
+        "tax_type": "hotel_tax",
+        "rate": 0.125
+      }
+    },
+    {
+      "component_type": "Markup",
+      "amount": 50000,
+      "currency": "IDR",
+      "dimensions": {
+        "order_detail_id": "OD-001"
+      },
+      "description": "Platform markup",
+      "meta": {
+        "basis": "net_markup",
+        "rate": 0.125
+      }
+    },
+    {
+      "component_type": "RoomRate",
+      "amount": 600000,
+      "currency": "IDR",
+      "dimensions": {
+        "order_detail_id": "OD-002"
+      },
+      "description": "Deluxe Suite - 3 nights",
+      "meta": {
+        "basis": "supplier_net",
+        "hotel_id": "HTL-456",
+        "original_currency": "USD",
+        "original_amount": 40
+      }
+    },
+    {
+      "component_type": "Tax",
+      "amount": 75000,
+      "currency": "IDR",
+      "dimensions": {
+        "order_detail_id": "OD-002"
+      },
+      "description": "Hotel Tax (GTN entity)",
+      "meta": {
+        "tax_type": "hotel_tax",
+        "rate": 0.125
+      }
+    },
+    {
+      "component_type": "Markup",
+      "amount": 75000,
+      "currency": "IDR",
+      "dimensions": {
+        "order_detail_id": "OD-002"
+      },
+      "description": "Platform markup",
+      "meta": {
+        "basis": "net_markup",
+        "rate": 0.125
+      }
+    }
+  ],
+  "totals": {
+    "customer_total": 1250000,
+    "currency": "IDR"
+  },
+  "meta": {
+    "trigger": "order_created",
+    "note": "Multi-order-detail scenario: OD-001 uses TNPL entity with IDR, OD-002 uses GTN entity with USD->IDR conversion"
+  }
+}

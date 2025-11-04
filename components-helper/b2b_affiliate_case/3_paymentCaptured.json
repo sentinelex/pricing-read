@@ -1,0 +1,25 @@
+{
+    "event_type": "PaymentLifecycle",
+    "schema_version": "payment.timeline.v1",
+    "order_id": "1200496236",
+    "emitted_at": "2025-08-04T10:00:00Z",
+    "payment": {
+      "status": "Captured",
+      "payment_id": "pi_b2b_001",
+      "pg_reference_id": "pg_b2b_001",
+      "payment_method": {
+        "channel": "AFFILIATE_DEPOSIT",
+        "provider": "AffiliateDeposit",
+        "brand": "INTERNAL"
+      },
+      "currency": "IDR",
+      "authorized_amount": 296223,
+      "authorized_at": "2025-07-31T13:25:25Z",
+      "captured_amount": 296223,
+      "captured_amount_total": 296223,
+      "captured_at": "2025-08-04T10:00:00Z",
+      "instrument": null,
+      "bnpl_plan": null
+    },
+    "idempotency_key": "pi_b2b_001:captured"
+  }

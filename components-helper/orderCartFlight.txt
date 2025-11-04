@@ -1,0 +1,847 @@
+"{
+  ""orderCartFlight_"": {
+    ""orderDetailId_"": ""0"",
+    ""flightNumber_"": ""SQ 955/SQ 116~SQ 103/SQ 958"",
+    ""trip_"": ""roundtrip"",
+    ""airlinesMasterId_"": ""0"",
+    ""airlinesName_"": ""SINGAPOREAIR"",
+    ""departureAirportId_"": ""20361"",
+    ""departureCity_"": ""CGK"",
+    ""departureTime_"": {
+      ""seconds_"": ""1756520700"",
+      ""nanos_"": ""0""
+    },
+    ""arrivalAirportId_"": ""185523"",
+    ""arrivalCity_"": ""KUL"",
+    ""arrivalTime_"": {
+      ""seconds_"": ""1756541400"",
+      ""nanos_"": ""0""
+    },
+    ""flightDate_"": {
+      ""year_"": ""2025"",
+      ""month_"": ""8"",
+      ""day_"": ""30""
+    },
+    ""flightClass_"": ""ECONOMY"",
+    ""serviceClass_"": ""ECONOMY"",
+    ""orderFrom_"": ""0"",
+    ""priceCurrency_"": ""IDR"",
+    ""priceAdult_"": {
+      ""currencyCode_"": ""IDR"",
+      ""units_"": ""3356700"",
+      ""nanos_"": ""0""
+    },
+    ""priceChild_"": {
+      ""currencyCode_"": ""IDR"",
+      ""units_"": ""0"",
+      ""nanos_"": ""0""
+    },
+    ""priceInfant_"": {
+      ""currencyCode_"": ""IDR"",
+      ""units_"": ""247000"",
+      ""nanos_"": ""0""
+    },
+    ""priceTotal_"": null,
+    ""priceNta_"": {
+      ""currencyCode_"": ""IDR"",
+      ""units_"": ""6960400"",
+      ""nanos_"": ""0""
+    },
+    ""balanceDue_"": null,
+    ""baseFareAdult_"": {
+      ""currencyCode_"": ""IDR"",
+      ""units_"": ""2470000"",
+      ""nanos_"": ""0""
+    },
+    ""baseFareChild_"": {
+      ""currencyCode_"": ""IDR"",
+      ""units_"": ""0"",
+      ""nanos_"": ""0""
+    },
+    ""baseFareInfant_"": {
+      ""currencyCode_"": ""IDR"",
+      ""units_"": ""247000"",
+      ""nanos_"": ""0""
+    },
+    ""fareInfo_"": {
+      ""adult_"": {
+        ""psc_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""iwjr_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""discount_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""baseFare_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""1235000"",
+          ""nanos_"": ""0""
+        },
+        ""originalBaseFare_"": {
+          ""currencyCode_"": """",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""nta_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""1678350"",
+          ""nanos_"": ""0""
+        },
+        ""commission_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""commissionValue_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""commissionPercentage_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""originalCommission_"": {
+          ""currencyCode_"": """",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""originalCommissionValue_"": {
+          ""currencyCode_"": """",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""originalCurrency_"": """",
+        ""tax_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""443350"",
+          ""nanos_"": ""0""
+        },
+        ""agentFee_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""airportTax_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""unidentified_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""adminFee_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        }
+      },
+      ""child_"": {
+        ""psc_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""iwjr_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""discount_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""baseFare_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""originalBaseFare_"": {
+          ""currencyCode_"": """",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""nta_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""commission_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""commissionValue_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""commissionPercentage_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""originalCommission_"": {
+          ""currencyCode_"": """",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""originalCommissionValue_"": {
+          ""currencyCode_"": """",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""originalCurrency_"": """",
+        ""tax_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""agentFee_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""airportTax_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""unidentified_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""adminFee_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        }
+      },
+      ""infant_"": {
+        ""psc_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""iwjr_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""discount_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""baseFare_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""123500"",
+          ""nanos_"": ""0""
+        },
+        ""originalBaseFare_"": {
+          ""currencyCode_"": """",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""nta_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""123500"",
+          ""nanos_"": ""0""
+        },
+        ""commission_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""commissionValue_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""commissionPercentage_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""originalCommission_"": {
+          ""currencyCode_"": """",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""originalCommissionValue_"": {
+          ""currencyCode_"": """",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""originalCurrency_"": """",
+        ""tax_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""agentFee_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""airportTax_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""unidentified_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""adminFee_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        }
+      }
+    },
+    ""customerPriceCurrency_"": """",
+    ""customerPriceAdult_"": null,
+    ""customerPriceChild_"": null,
+    ""customerPriceInfant_"": null,
+    ""customerPriceTotal_"": null,
+    ""countAdult_"": ""2"",
+    ""countChild_"": ""0"",
+    ""countInfant_"": ""1"",
+    ""type_"": ""2"",
+    ""tax_"": null,
+    ""flightInfo_"": [{
+      ""flightNo_"": ""SQ 955"",
+      ""depAirport_"": ""CGK"",
+      ""arrAirport_"": ""SIN"",
+      ""depAirportName_"": ""Soekarno Hatta"",
+      ""arrAirportName_"": ""Singapore Changi Apt"",
+      ""depCityCode_"": ""JKTC"",
+      ""arrCityCode_"": ""SINC"",
+      ""depCityName_"": ""Jakarta"",
+      ""arrCityName_"": ""Singapore"",
+      ""depTimeFull_"": ""2025-08-30 09:25"",
+      ""arrTimeFull_"": ""2025-08-30 12:15"",
+      ""class_"": null,
+      ""isPromo_"": ""0"",
+      ""stop_"": ""0"",
+      ""operatingCarrier_"": ""SQ 955"",
+      ""marketingAirline_"": ""SQ"",
+      ""departureTerminal_"": ""3"",
+      ""arrivalTerminal_"": ""0"",
+      ""bundlingMeal_"": ""false"",
+      ""bundlingBaggage_"": ""false"",
+      ""connectingTime_"": ""0"",
+      ""inclusiveBaggages_"": [{
+        ""unit_"": ""25"",
+        ""measurement_"": ""Kg""
+      }],
+      ""depVisaRequired_"": ""false"",
+      ""arrVisaRequired_"": ""false"",
+      ""tags_"": [""aNEWversary"", ""SMART_TRIP""],
+      ""flexi_"": ""false"",
+      ""benefits_"": [],
+      ""penaltyInfo_"": ""true"",
+      ""departureAirportName_"": ""Soekarno Hatta"",
+      ""arrivalAirportName_"": ""Singapore Changi Apt"",
+      ""departureCountryName_"": ""Indonesia"",
+      ""arrivalCountryName_"": ""Malaysia"",
+      ""departureCityName_"": ""Jakarta"",
+      ""arrivalCityName_"": ""Singapore"",
+      ""arrTimezone_"": ""8.0"",
+      ""depTimezone_"": ""7.0"",
+      ""rescheduleByAirlines_"": ""false"",
+      ""rescheduleInfos_"": [],
+      ""class__"": ""K""
+    }, {
+      ""flightNo_"": ""SQ 116"",
+      ""depAirport_"": ""SIN"",
+      ""arrAirport_"": ""KUL"",
+      ""depAirportName_"": ""Singapore Changi Apt"",
+      ""arrAirportName_"": ""Kuala Lumpur International Airport"",
+      ""depCityCode_"": ""SINC"",
+      ""arrCityCode_"": ""KULC"",
+      ""depCityName_"": ""Singapore"",
+      ""arrCityName_"": ""Kuala Lumpur"",
+      ""depTimeFull_"": ""2025-08-30 14:55"",
+      ""arrTimeFull_"": ""2025-08-30 16:10"",
+      ""class_"": null,
+      ""isPromo_"": ""0"",
+      ""stop_"": ""0"",
+      ""operatingCarrier_"": ""SQ 116"",
+      ""marketingAirline_"": ""SQ"",
+      ""departureTerminal_"": ""2"",
+      ""arrivalTerminal_"": ""1"",
+      ""bundlingMeal_"": ""false"",
+      ""bundlingBaggage_"": ""false"",
+      ""connectingTime_"": ""0"",
+      ""inclusiveBaggages_"": [{
+        ""unit_"": ""25"",
+        ""measurement_"": ""Kg""
+      }],
+      ""depVisaRequired_"": ""false"",
+      ""arrVisaRequired_"": ""false"",
+      ""tags_"": [""aNEWversary"", ""SMART_TRIP""],
+      ""flexi_"": ""false"",
+      ""benefits_"": [],
+      ""penaltyInfo_"": ""true"",
+      ""departureAirportName_"": ""Singapore Changi Apt"",
+      ""arrivalAirportName_"": ""Kuala Lumpur International Airport"",
+      ""departureCountryName_"": ""Indonesia"",
+      ""arrivalCountryName_"": ""Malaysia"",
+      ""departureCityName_"": ""Singapore"",
+      ""arrivalCityName_"": ""Kuala Lumpur"",
+      ""arrTimezone_"": ""8.0"",
+      ""depTimezone_"": ""8.0"",
+      ""rescheduleByAirlines_"": ""false"",
+      ""rescheduleInfos_"": [],
+      ""class__"": ""K""
+    }],
+    ""via_"": ""SIN ~ SIN"",
+    ""contactTitle_"": ""Mr"",
+    ""contactEmail_"": ""ariohalim@yahoo.com"",
+    ""contactFirstName_"": ""Ario Halim"",
+    ""contactLastName_"": ""Prasetyo"",
+    ""contactPhone_"": ""+6281617142014"",
+    ""contactOtherPhone_"": ""+6281617142014"",
+    ""bookingCode_"": ""EOHPGS"",
+    ""bookExpiredDatetime_"": null,
+    ""ticketStatus_"": ""2"",
+    ""flightRef_"": ""0"",
+    ""additionalFee_"": null,
+    ""additionalFeeCurrency_"": """",
+    ""baggageFee_"": {
+      ""currencyCode_"": ""IDR"",
+      ""units_"": ""0"",
+      ""nanos_"": ""0""
+    },
+    ""baggageFeeCurrency_"": ""IDR"",
+    ""airlinesAccountId_"": ""0"",
+    ""account_"": ""tiketcomSabreNDC"",
+    ""vendor_"": ""sa"",
+    ""referenceNumber_"": """",
+    ""subPriceIdr_"": null,
+    ""airlinesFee_"": {
+      ""currencyCode_"": ""IDR"",
+      ""units_"": ""0"",
+      ""nanos_"": ""0""
+    },
+    ""airlinesFeeCurrency_"": ""IDR"",
+    ""priceDetail_"": """",
+    ""orderDetailIdBefore_"": ""0"",
+    ""connectingGroup_"": ""0"",
+    ""hasInsurance_"": ""true"",
+    ""logReference_"": """",
+    ""mealFee_"": null,
+    ""mealFeeCurrency_"": """",
+    ""orderCartFlightSegment_"": [{
+      ""orderSegmentId_"": ""0"",
+      ""orderDetailId_"": ""0"",
+      ""trip_"": ""depart"",
+      ""flightNumber_"": ""SQ 955/SQ 116"",
+      ""flightDate_"": {
+        ""year_"": ""2025"",
+        ""month_"": ""8"",
+        ""day_"": ""30""
+      },
+      ""airlinesMasterId_"": ""22593739"",
+      ""airlinesName_"": ""SINGAPOREAIR"",
+      ""departureAirportId_"": ""20361"",
+      ""departureCity_"": ""CGK"",
+      ""departureTime_"": {
+        ""seconds_"": ""1756520700"",
+        ""nanos_"": ""0""
+      },
+      ""arrivalAirportId_"": ""185523"",
+      ""arrivalCity_"": ""KUL"",
+      ""arrivalTime_"": {
+        ""seconds_"": ""1756541400"",
+        ""nanos_"": ""0""
+      },
+      ""serviceClass_"": ""ECONOMY"",
+      ""flightClass_"": ""ECONOMY"",
+      ""via_"": ""SIN"",
+      ""stop_"": ""0"",
+      ""flightInfo_"": [{
+        ""flightNo_"": ""SQ 955"",
+        ""depAirport_"": ""CGK"",
+        ""arrAirport_"": ""SIN"",
+        ""depAirportName_"": ""Soekarno Hatta"",
+        ""arrAirportName_"": ""Singapore Changi Apt"",
+        ""depCityCode_"": ""JKTC"",
+        ""arrCityCode_"": ""SINC"",
+        ""depCityName_"": ""Jakarta"",
+        ""arrCityName_"": ""Singapore"",
+        ""depTimeFull_"": ""2025-08-30 09:25"",
+        ""arrTimeFull_"": ""2025-08-30 12:15"",
+        ""class_"": null,
+        ""isPromo_"": ""0"",
+        ""stop_"": ""0"",
+        ""operatingCarrier_"": ""SQ 955"",
+        ""marketingAirline_"": ""SQ"",
+        ""departureTerminal_"": ""3"",
+        ""arrivalTerminal_"": ""0"",
+        ""bundlingMeal_"": ""false"",
+        ""bundlingBaggage_"": ""false"",
+        ""connectingTime_"": ""0"",
+        ""inclusiveBaggages_"": [{
+          ""unit_"": ""25"",
+          ""measurement_"": ""Kg""
+        }],
+        ""depVisaRequired_"": ""false"",
+        ""arrVisaRequired_"": ""false"",
+        ""tags_"": [""aNEWversary"", ""SMART_TRIP""],
+        ""flexi_"": ""false"",
+        ""benefits_"": [],
+        ""penaltyInfo_"": ""false"",
+        ""departureAirportName_"": """",
+        ""arrivalAirportName_"": """",
+        ""departureCountryName_"": """",
+        ""arrivalCountryName_"": """",
+        ""departureCityName_"": """",
+        ""arrivalCityName_"": """",
+        ""arrTimezone_"": ""8.0"",
+        ""depTimezone_"": ""7.0"",
+        ""rescheduleByAirlines_"": ""false"",
+        ""rescheduleInfos_"": [],
+        ""class__"": ""K""
+      }, {
+        ""flightNo_"": ""SQ 116"",
+        ""depAirport_"": ""SIN"",
+        ""arrAirport_"": ""KUL"",
+        ""depAirportName_"": ""Singapore Changi Apt"",
+        ""arrAirportName_"": ""Kuala Lumpur International Airport"",
+        ""depCityCode_"": ""SINC"",
+        ""arrCityCode_"": ""KULC"",
+        ""depCityName_"": ""Singapore"",
+        ""arrCityName_"": ""Kuala Lumpur"",
+        ""depTimeFull_"": ""2025-08-30 14:55"",
+        ""arrTimeFull_"": ""2025-08-30 16:10"",
+        ""class_"": null,
+        ""isPromo_"": ""0"",
+        ""stop_"": ""0"",
+        ""operatingCarrier_"": ""SQ 116"",
+        ""marketingAirline_"": ""SQ"",
+        ""departureTerminal_"": ""2"",
+        ""arrivalTerminal_"": ""1"",
+        ""bundlingMeal_"": ""false"",
+        ""bundlingBaggage_"": ""false"",
+        ""connectingTime_"": ""0"",
+        ""inclusiveBaggages_"": [{
+          ""unit_"": ""25"",
+          ""measurement_"": ""Kg""
+        }],
+        ""depVisaRequired_"": ""false"",
+        ""arrVisaRequired_"": ""false"",
+        ""tags_"": [""aNEWversary"", ""SMART_TRIP""],
+        ""flexi_"": ""false"",
+        ""benefits_"": [],
+        ""penaltyInfo_"": ""false"",
+        ""departureAirportName_"": """",
+        ""arrivalAirportName_"": """",
+        ""departureCountryName_"": """",
+        ""arrivalCountryName_"": """",
+        ""departureCityName_"": """",
+        ""arrivalCityName_"": """",
+        ""arrTimezone_"": ""8.0"",
+        ""depTimezone_"": ""8.0"",
+        ""rescheduleByAirlines_"": ""false"",
+        ""rescheduleInfos_"": [],
+        ""class__"": ""K""
+      }],
+      ""baseFareAdult_"": {
+        ""currencyCode_"": ""IDR"",
+        ""units_"": ""1235000"",
+        ""nanos_"": ""0""
+      },
+      ""baseFareChild_"": {
+        ""currencyCode_"": ""IDR"",
+        ""units_"": ""0"",
+        ""nanos_"": ""0""
+      },
+      ""baseFareInfant_"": {
+        ""currencyCode_"": ""IDR"",
+        ""units_"": ""123500"",
+        ""nanos_"": ""0""
+      },
+      ""priceCurrency_"": ""IDR"",
+      ""priceAdult_"": {
+        ""currencyCode_"": ""IDR"",
+        ""units_"": ""1659246"",
+        ""nanos_"": ""0""
+      },
+      ""priceChild_"": {
+        ""currencyCode_"": ""IDR"",
+        ""units_"": ""0"",
+        ""nanos_"": ""0""
+      },
+      ""priceInfant_"": {
+        ""currencyCode_"": ""IDR"",
+        ""units_"": ""123500"",
+        ""nanos_"": ""0""
+      },
+      ""priceTotal_"": {
+        ""currencyCode_"": ""IDR"",
+        ""units_"": ""3441991"",
+        ""nanos_"": ""0""
+      },
+      ""subPriceIdr_"": null,
+      ""fareInfo_"": null,
+      ""class_"": null,
+      ""airlineBookingCode_"": """",
+      ""departureTimezone_"": ""7.0"",
+      ""arrivalTimezone_"": ""8.0"",
+      ""airlineCartFlightSegment_"": {
+        ""code_"": ""SQ"",
+        ""name_"": ""SINGAPORE AIRLINES"",
+        ""displayName_"": ""Singapore Airlines""
+      },
+      ""airlineStatus_"": """",
+      ""class__"": ""K""
+    }, {
+      ""orderSegmentId_"": ""0"",
+      ""orderDetailId_"": ""0"",
+      ""trip_"": ""return"",
+      ""flightNumber_"": ""SQ 103/SQ 958"",
+      ""flightDate_"": {
+        ""year_"": ""2025"",
+        ""month_"": ""9"",
+        ""day_"": ""4""
+      },
+      ""airlinesMasterId_"": ""22593739"",
+      ""airlinesName_"": ""SINGAPOREAIR"",
+      ""departureAirportId_"": ""185523"",
+      ""departureCity_"": ""KUL"",
+      ""departureTime_"": {
+        ""seconds_"": ""1756947300"",
+        ""nanos_"": ""0""
+      },
+      ""arrivalAirportId_"": ""20361"",
+      ""arrivalCity_"": ""CGK"",
+      ""arrivalTime_"": {
+        ""seconds_"": ""1756964100"",
+        ""nanos_"": ""0""
+      },
+      ""serviceClass_"": ""ECONOMY"",
+      ""flightClass_"": ""ECONOMY"",
+      ""via_"": ""SIN"",
+      ""stop_"": ""0"",
+      ""flightInfo_"": [{
+        ""flightNo_"": ""SQ 103"",
+        ""depAirport_"": ""KUL"",
+        ""arrAirport_"": ""SIN"",
+        ""depAirportName_"": ""Kuala Lumpur International Airport"",
+        ""arrAirportName_"": ""Singapore Changi Apt"",
+        ""depCityCode_"": ""KULC"",
+        ""arrCityCode_"": ""SINC"",
+        ""depCityName_"": ""Kuala Lumpur"",
+        ""arrCityName_"": ""Singapore"",
+        ""depTimeFull_"": ""2025-09-04 08:55"",
+        ""arrTimeFull_"": ""2025-09-04 10:05"",
+        ""class_"": null,
+        ""isPromo_"": ""0"",
+        ""stop_"": ""0"",
+        ""operatingCarrier_"": ""SQ 103"",
+        ""marketingAirline_"": ""SQ"",
+        ""departureTerminal_"": ""1"",
+        ""arrivalTerminal_"": ""0"",
+        ""bundlingMeal_"": ""false"",
+        ""bundlingBaggage_"": ""false"",
+        ""connectingTime_"": ""0"",
+        ""inclusiveBaggages_"": [{
+          ""unit_"": ""25"",
+          ""measurement_"": ""Kg""
+        }],
+        ""depVisaRequired_"": ""false"",
+        ""arrVisaRequired_"": ""false"",
+        ""tags_"": [""aNEWversary"", ""SMART_TRIP""],
+        ""flexi_"": ""false"",
+        ""benefits_"": [],
+        ""penaltyInfo_"": ""false"",
+        ""departureAirportName_"": """",
+        ""arrivalAirportName_"": """",
+        ""departureCountryName_"": """",
+        ""arrivalCountryName_"": """",
+        ""departureCityName_"": """",
+        ""arrivalCityName_"": """",
+        ""arrTimezone_"": ""8.0"",
+        ""depTimezone_"": ""8.0"",
+        ""rescheduleByAirlines_"": ""false"",
+        ""rescheduleInfos_"": [],
+        ""class__"": ""V""
+      }, {
+        ""flightNo_"": ""SQ 958"",
+        ""depAirport_"": ""SIN"",
+        ""arrAirport_"": ""CGK"",
+        ""depAirportName_"": ""Singapore Changi Apt"",
+        ""arrAirportName_"": ""Soekarno Hatta"",
+        ""depCityCode_"": ""SINC"",
+        ""arrCityCode_"": ""JKTC"",
+        ""depCityName_"": ""Singapore"",
+        ""arrCityName_"": ""Jakarta"",
+        ""depTimeFull_"": ""2025-09-04 12:45"",
+        ""arrTimeFull_"": ""2025-09-04 13:35"",
+        ""class_"": null,
+        ""isPromo_"": ""0"",
+        ""stop_"": ""0"",
+        ""operatingCarrier_"": ""SQ 958"",
+        ""marketingAirline_"": ""SQ"",
+        ""departureTerminal_"": ""2"",
+        ""arrivalTerminal_"": ""3"",
+        ""bundlingMeal_"": ""false"",
+        ""bundlingBaggage_"": ""false"",
+        ""connectingTime_"": ""0"",
+        ""inclusiveBaggages_"": [{
+          ""unit_"": ""25"",
+          ""measurement_"": ""Kg""
+        }],
+        ""depVisaRequired_"": ""false"",
+        ""arrVisaRequired_"": ""false"",
+        ""tags_"": [""aNEWversary"", ""SMART_TRIP""],
+        ""flexi_"": ""false"",
+        ""benefits_"": [],
+        ""penaltyInfo_"": ""false"",
+        ""departureAirportName_"": """",
+        ""arrivalAirportName_"": """",
+        ""departureCountryName_"": """",
+        ""arrivalCountryName_"": """",
+        ""departureCityName_"": """",
+        ""arrivalCityName_"": """",
+        ""arrTimezone_"": ""7.0"",
+        ""depTimezone_"": ""8.0"",
+        ""rescheduleByAirlines_"": ""false"",
+        ""rescheduleInfos_"": [],
+        ""class__"": ""V""
+      }],
+      ""baseFareAdult_"": {
+        ""currencyCode_"": ""IDR"",
+        ""units_"": ""1235000"",
+        ""nanos_"": ""0""
+      },
+      ""baseFareChild_"": {
+        ""currencyCode_"": ""IDR"",
+        ""units_"": ""0"",
+        ""nanos_"": ""0""
+      },
+      ""baseFareInfant_"": {
+        ""currencyCode_"": ""IDR"",
+        ""units_"": ""123500"",
+        ""nanos_"": ""0""
+      },
+      ""priceCurrency_"": ""IDR"",
+      ""priceAdult_"": {
+        ""currencyCode_"": ""IDR"",
+        ""units_"": ""1659246"",
+        ""nanos_"": ""0""
+      },
+      ""priceChild_"": {
+        ""currencyCode_"": ""IDR"",
+        ""units_"": ""0"",
+        ""nanos_"": ""0""
+      },
+      ""priceInfant_"": {
+        ""currencyCode_"": ""IDR"",
+        ""units_"": ""123500"",
+        ""nanos_"": ""0""
+      },
+      ""priceTotal_"": {
+        ""currencyCode_"": ""IDR"",
+        ""units_"": ""3441991"",
+        ""nanos_"": ""0""
+      },
+      ""subPriceIdr_"": null,
+      ""fareInfo_"": null,
+      ""class_"": null,
+      ""airlineBookingCode_"": """",
+      ""departureTimezone_"": ""8.0"",
+      ""arrivalTimezone_"": ""8.0"",
+      ""airlineCartFlightSegment_"": {
+        ""code_"": ""SQ"",
+        ""name_"": ""SINGAPORE AIRLINES"",
+        ""displayName_"": ""Singapore Airlines""
+      },
+      ""airlineStatus_"": """",
+      ""class__"": ""V""
+    }],
+    ""orderCartFlightCommision_"": {
+      ""orderFlightComissionId_"": ""0"",
+      ""orderDetailId_"": ""0"",
+      ""breakdown_"": {
+        ""totalAdultComission_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""totalChildComission_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        },
+        ""totalInfantComission_"": {
+          ""currencyCode_"": ""IDR"",
+          ""units_"": ""0"",
+          ""nanos_"": ""0""
+        }
+      },
+      ""total_"": {
+        ""currencyCode_"": ""IDR"",
+        ""units_"": ""0"",
+        ""nanos_"": ""0""
+      }
+    },
+    ""orderCartFlightInformation_"": [{
+      ""orderFacilitiesId_"": ""0"",
+      ""orderDetailId_"": ""0"",
+      ""type_"": ""roundtrip"",
+      ""value_"": ""{\""departure_facilities\"":[{\""origin\"":\""CGK\"",\""destination\"":\""SIN\"",\""flight_number\"":\""SQ 955\"",\""facilities\"":{\""meal\"":{\""icon\"":\""https://s-light.tiket.photos/t/01E25EBZS3W0FY9GTG6C42E1SE/rsfit00gsmenlarge1/string/2021/03/30/4e1c0792-0fd9-4cb1-8951-cabaf8640535-1617115590300-f2bb5057bd075e6e38dde5cf49a90be2.png\"",\""value\"":\""true\""},\""aircraft\"":{\""icon\"":null,\""value\"":\""Airbus A350-900\""}}},{\""origin\"":\""SIN\"",\""destination\"":\""KUL\"",\""flight_number\"":\""SQ 116\"",\""facilities\"":{\""meal\"":{\""icon\"":\""https://s-light.tiket.photos/t/01E25EBZS3W0FY9GTG6C42E1SE/rsfit00gsmenlarge1/string/2021/03/30/4e1c0792-0fd9-4cb1-8951-cabaf8640535-1617115590300-f2bb5057bd075e6e38dde5cf49a90be2.png\"",\""value\"":\""true\""},\""aircraft\"":{\""icon\"":null,\""value\"":\""Boeing 737 MAX 8\""}}}],\""return_facilities\"":[{\""origin\"":\""KUL\"",\""destination\"":\""SIN\"",\""flight_number\"":\""SQ 103\"",\""facilities\"":{\""meal\"":{\""icon\"":\""https://s-light.tiket.photos/t/01E25EBZS3W0FY9GTG6C42E1SE/rsfit00gsmenlarge1/string/2021/03/30/4e1c0792-0fd9-4cb1-8951-cabaf8640535-1617115590300-f2bb5057bd075e6e38dde5cf49a90be2.png\"",\""value\"":\""true\""},\""aircraft\"":{\""icon\"":null,\""value\"":\""Boeing 737 MAX 8\""}}},{\""origin\"":\""SIN\"",\""destination\"":\""CGK\"",\""flight_number\"":\""SQ 958\"",\""facilities\"":{\""meal\"":{\""icon\"":\""https://s-light.tiket.photos/t/01E25EBZS3W0FY9GTG6C42E1SE/rsfit00gsmenlarge1/string/2021/03/30/4e1c0792-0fd9-4cb1-8951-cabaf8640535-1617115590300-f2bb5057bd075e6e38dde5cf49a90be2.png\"",\""value\"":\""true\""},\""aircraft\"":{\""icon\"":null,\""value\"":\""Airbus A350-900\""}}}]}""
+    }, {
+      ""orderFacilitiesId_"": ""0"",
+      ""orderDetailId_"": ""0"",
+      ""type_"": ""store_id"",
+      ""value_"": ""TIKETCOM""
+    }, {
+      ""orderFacilitiesId_"": ""0"",
+      ""orderDetailId_"": ""0"",
+      ""type_"": ""channel_id"",
+      ""value_"": ""ANDROID""
+    }, {
+      ""orderFacilitiesId_"": ""0"",
+      ""orderDetailId_"": ""0"",
+      ""type_"": ""reseller_id"",
+      ""value_"": """"
+    }, {
+      ""orderFacilitiesId_"": ""0"",
+      ""orderDetailId_"": ""0"",
+      ""type_"": ""order_from"",
+      ""value_"": ""preorder""
+    }, {
+      ""orderFacilitiesId_"": ""0"",
+      ""orderDetailId_"": ""0"",
+      ""type_"": ""flight_city_name"",
+      ""value_"": ""Jakarta,Kuala Lumpur""
+    }, {
+      ""orderFacilitiesId_"": ""0"",
+      ""orderDetailId_"": ""0"",
+      ""type_"": ""original_passenger"",
+      ""value_"": ""[{\""order_passenger_id\"":268959495,\""original_first_name\"":\""Ario Halim\"",\""original_last_name\"":\""Prasetyo\"",\""title\"":\""Mr\""},{\""order_passenger_id\"":268959496,\""original_first_name\"":\""Tesya\"",\""original_last_name\"":\""Renata\"",\""title\"":\""Mrs\""},{\""order_passenger_id\"":268959497,\""original_first_name\"":\""Ansel\"",\""original_last_name\"":\""Joel Halim\"",\""title\"":\""Mstr\""}]""
+    }],
+    ""departureTimezone_"": ""7.0"",
+    ""arrivalTimezone_"": ""8.0"",
+    ""airlineCartFlight_"": null,
+    ""ccpReferenceNumber_"": ""LLSILT""
+  }
+}"

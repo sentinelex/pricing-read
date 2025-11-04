@@ -1,0 +1,20 @@
+
+{
+    "event_type": "IssuanceSupplierLifecycle",
+    "schema_version": "supplier.commerce.v1",
+    "order_id": "1200496236",
+    "order_detail_id": "1200917821",
+    "emitted_at": "2025-07-31T13:40:00Z",
+    "supplier": {
+      "status": "CancelledNoFee",
+      "supplier_id": "NATIVE",
+      "supplier_ref": "1859696",
+      "amount_due": null,
+      "currency": "IDR",
+      "cancellation": {
+        "fee_amount": 0,
+        "fee_currency": "IDR"
+      }
+    },
+    "idempotency_key": "1200496236:1200917821:NATIVE:cancelled_nofee"
+  }

@@ -1,0 +1,25 @@
+{
+    "event_type": "payment.checkout",
+    "schema_version": "payment.timeline.v1",
+    "order_id": "1200496236",
+    "emitted_at": "2025-07-31T13:25:25Z",
+    "payment": {
+      "status": "Authorized",
+      "payment_id": "pi_b2b_001",
+      "payment_intent_id": "pi_b2b_001",
+      "payment_method": {
+        "channel": "AFFILIATE_DEPOSIT",
+        "provider": "AffiliateDeposit",
+        "brand": "INTERNAL"
+      },
+      "currency": "IDR",
+      "authorized_amount": 296223,
+      "authorized_at": "2025-07-31T13:25:25Z",
+      "captured_amount": null,
+      "captured_amount_total": 0,
+      "captured_at": null,
+      "instrument": null,
+      "bnpl_plan": null
+    },
+    "idempotency_key": "pi_b2b_001:authorized"
+  }

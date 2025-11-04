@@ -1,0 +1,34 @@
+{
+    "event_type": "PaymentTimelineUpserted",
+    "schema_version": "payment.dual.v1",
+    "order_id": "ORD-HOTEL-001",
+    "timeline_version": 2,
+    "emitted_at": "2025-10-01T10:20:01Z",
+    "payment": {
+      "status": "Captured",
+      "payment_id": "pi_001",
+      "pg_reference_id": "pg_001",
+      "payment_method": { "channel": "VA", "provider": "NicePay", "brand": "BNI" },
+      "currency": "IDR",
+      "authorized_amount": 3010000,
+      "authorized_at": "2025-10-01T10:02:05Z",
+      "captured_amount_total": 3010000,
+      "captured_at": "2025-10-01T10:19:50Z",
+      "instrument": {
+        "type": "VA",
+        "va": {
+          "bank": "BNI",
+          "account_number_masked": "8060•••••••1234",
+          "account_number_full_hash": "sha256:a3f7e8b..."
+        },
+        "card": null,
+        "ewallet": null,
+        "bnpl": null,
+        "display_hint": "BNI VA ••••1234",
+        "psp_ref": "psp_cap_654",
+        "psp_trace_id": "trace_cap_002"
+      }
+    },
+    "idempotency_key": "pi_001:captured"
+  }
+  

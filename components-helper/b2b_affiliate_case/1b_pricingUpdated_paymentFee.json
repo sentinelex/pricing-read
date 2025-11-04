@@ -1,0 +1,55 @@
+{
+  "event_type": "PricingUpdated",
+  "schema_version": "pricing.commerce.v1",
+  "order_id": "1200496236",
+  "vertical": "accommodation",
+  "emitted_at": "2025-07-31T13:25:23Z",
+  "customer_context": {
+    "reseller_type_name": "B2B_AFFILIATE",
+    "reseller_id": "100005361",
+    "reseller_name": "Partner CFD Non IDR - Accommodation - Invoicing"
+  },
+  "detail_context": {
+    "order_detail_id": "1200917821",
+    "entity_context": {
+      "entity_code": "TNPL"
+    },
+    "fx_context": {
+      "timestamp_fx_rate": "2025-07-31T13:25:23Z",
+      "payment_currency": "IDR",
+      "supply_currency": "IDR",
+      "record_currency": "IDR",
+      "gbv_currency": "IDR",
+      "payment_value": 296223,
+      "supply_to_payment_fx_rate": 1,
+      "supply_to_record_fx_rate": 1,
+      "payment_to_gbv_fx_rate": 1,
+      "source": "Treasury"
+    }
+  },
+  "components": [
+   
+    {
+      "component_type": "TransactionFee",
+      "amount": 3000,
+      "currency": "IDR",
+      "dimensions": {},
+      "meta": {
+        "payment_method": "AFFILIATE_DEPOSIT",
+        "fee_type": "payment_gateway_fee",
+        "notes": "Payment processing fee for affiliate deposit",
+        "applicable_scope": "order"
+      },
+      "description": "Payment gateway transaction fee"
+    }
+  ],
+  "totals": {
+    "customer_total": 296223,
+    "currency": "IDR"
+  },
+  "meta": {
+    "trigger": "payment_method_selected",
+    "emitter_service": "payment-core",
+    "reason": "TransactionFee added after payment method selection"
+  }
+}

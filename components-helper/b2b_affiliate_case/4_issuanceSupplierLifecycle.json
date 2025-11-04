@@ -1,0 +1,51 @@
+{
+  "event_type": "IssuanceSupplierLifecycle",
+  "schema_version": "supplier.commerce.v1",
+  "order_id": "1200496236",
+  "order_detail_id": "1200917821",
+  "emitted_at": "2025-07-31T13:26:00Z",
+  "supplier": {
+    "status": "ISSUED",
+    "supplier_id": "NATIVE",
+    "booking_code": "1859696",
+    "supplier_ref": "1859696",
+    "amount_due": 246281,
+    "currency": "IDR",
+    "fx_context": {
+      "timestamp_fx_rate": "2025-07-31T13:26:21Z",
+      "payment_currency": "IDR",
+      "supply_currency": "IDR",
+      "record_currency": "IDR",
+      "gbv_currency": "IDR",
+      "payment_value": 293223,
+      "supply_to_payment_fx_rate": 1,
+      "supply_to_record_fx_rate": 1,
+      "payment_to_gbv_fx_rate": 1,
+      "source": "Treasury"
+    },
+    "entity_context": {
+      "entity_code": "GTN"
+    },
+    "affiliate": {
+      "reseller_id": "100005361",
+      "reseller_name": "Partner CFD Non IDR - Accommodation - Invoicing",
+      "partnerShareback": {
+        "component_type": "AffiliateShareback",
+        "amount": 4694.2,
+        "currency": "IDR",
+        "rate": 0.1,
+        "basis": "markup"
+      },
+      "taxes": [
+        {
+          "type": "VAT",
+          "amount": 516.36,
+          "currency": "IDR",
+          "rate": 0.11,
+          "basis": "shareback"
+        }
+      ]
+    }
+  },
+  "idempotency_key": "1200496236:1200917821:NATIVE:issued"
+}

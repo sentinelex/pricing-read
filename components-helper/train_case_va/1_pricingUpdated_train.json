@@ -1,0 +1,67 @@
+{
+    "event_type": "PricingUpdated",
+    "schema_version": "pricing.commerce.v1",
+    "order_id": "1327314937",
+    "vertical": "train",
+    "emitted_at": "2025-11-03T23:47:46.022316",
+    "customer_context": {
+      "reseller_type_name": "B2C",
+      "reseller_id": null,
+      "reseller_name": null,
+      "account_id":"43178597"
+    },
+    "detail_context": {
+      "order_detail_id": "1365755656",
+      "entity_context": {
+        "entity_code": "GTN"
+      },
+      "fx_context": {
+        "timestamp_fx_rate": "2025-11-03T23:47:46Z",
+        "payment_currency": "IDR",
+        "supply_currency": "IDR",
+        "record_currency": "IDR",
+        "gbv_currency": "IDR",
+        "payment_value": 1614500,
+        "supply_to_payment_fx_rate": 1.0,
+        "supply_to_record_fx_rate": 1.0,
+        "payment_to_gbv_fx_rate": 1.0,
+        "source": "Treasury"
+      }
+    },
+    "components": [
+      {
+        "component_type": "BaseFare",
+        "amount": 795000,
+        "currency": "IDR",
+        "dimensions": {
+          "order_detail_id": "1365755656",
+          "profile_id": "216709946"
+        }
+      },
+      {
+        "component_type": "BaseFare",
+        "amount": 795000,
+        "currency": "IDR",
+        "dimensions": {
+          "order_detail_id": "1365755656",
+          "profile_id": "255146342"
+        }
+      },
+      {
+        "component_type": "PlatformFee",
+        "amount": 17000,
+        "currency": "IDR",
+        "dimensions": {}
+      },
+      {
+        "component_type": "ConvenienceFee",
+        "amount": 7500,
+        "currency": "IDR",
+        "dimensions": {}
+      }
+    ],
+    "totals": {
+      "customer_total": 1614500,
+      "currency": "IDR"
+    }
+  }

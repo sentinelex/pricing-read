@@ -1,0 +1,31 @@
+{
+  "event_type": "PaymentLifecycle",
+  "schema_version": "payment.commerce.v1",
+  "order_id": "1327314937",
+  "emitted_at": "2025-11-04T10:02:05Z",
+  "payment": {
+    "status": "Authorized",                      
+    "payment_id": "1353777718",
+    "payment_method": { "channel": "VA_MANDIRI", "provider": "NicePay", "brand": "MANDIRI" },
+    "currency": "IDR",
+    "authorized_amount": 1614500,                
+    "authorized_at": "2025-11-04T10:02:05Z",
+    "captured_amount_total": 0,
+    "captured_at": null,
+    "bnpl_plan": null,
+    "instrument": {
+      "type": "VA",
+      "va": {
+        "bank": "MANDIRI",
+        "account_number": "7001450113375727"
+      },
+      "card": null,
+      "ewallet": null,
+      "bnpl": null,
+      "display_hint": "MANDIRI VA ****5727",
+      "psp_ref": "psp_auth_321",
+      "psp_trace_id": "trace_auth_001"
+    }
+  },
+  "idempotency_key": "1353777718:authorized"
+}

@@ -1,0 +1,74 @@
+{
+    "event_type": "IssuanceSupplierLifecycle",
+    "schema_version": "supplier.commerce.v1",
+    "order_id": "1200496236",
+    "order_detail_id": "1200917821",
+    "emitted_at": "2025-07-31T13:45:00Z",
+    "supplier": {
+      "status": "Confirmed",
+      "supplier_id": "EXPEDIA",
+      "booking_code": "EX-BOOK-9901",
+      "supplier_ref": "123456",
+      "amount_due": 250000,
+      "currency": "IDR",
+  
+      "fx_context": {
+        "as_of": "2025-07-31T13:45:00Z",
+        "payment_currency": "IDR",
+        "supply_currency": "IDR",
+        "record_currency": "IDR",
+        "gbv_currency": "IDR",
+        "payment_value": 293223,
+        "supply_to_payment_fx_rate": 1,
+        "supply_to_record_fx_rate": 1,
+        "payment_to_gbv_fx_rate": 1,
+        "source": "Treasury"
+      },
+  
+      "entity_context": {
+        "merchant_of_record": "GTN",
+        "supplier_entity": "TNPL",
+        "customer_entity": "GTN"
+      },
+  
+      "affiliate": {
+        "reseller_id": "100005361",
+        "reseller_name": "Partner CFD Non IDR - Accommodation - Invoicing",
+  
+        "partnerShareback": {
+          "component_type": "AffiliateShareback",
+          "amount": 4694,                  
+          "currency": "IDR",
+          "rate": 0.1,
+          "basis": "markup"
+        },
+  
+        "taxes": [
+          {
+            "type": "VAT",
+            "amount": 516, 
+            "currency": "IDR",
+            "rate": 0.11,
+            "basis": "shareback"
+          }
+        ],
+  
+        "meta": {
+          "carry_over_from_supplier": "NATIVE",
+          "carry_over_ref": "1859696",
+          "note": "Affiliate shareback applied to rebooked supplier EXPEDIA"
+        }
+      }
+    },
+  
+    "meta": {
+      "rerouted_from": {
+        "supplier_id": "NATIVE",
+        "supplier_ref": "1859696",
+        "reason": "Rebooked with free cancellation"
+      },
+      "rebook_policy": "Customer-initiated, same order ID"
+    },
+  
+    "idempotency_key": "1200496236:1200917821:EXPEDIA:confirmed"
+  }

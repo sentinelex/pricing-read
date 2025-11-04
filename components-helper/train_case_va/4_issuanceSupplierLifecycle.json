@@ -1,0 +1,31 @@
+{
+    "event_type": "IssuanceSupplierLifecycle",
+    "schema_version": "supplier.commerce.v1",
+    "order_id": "1327314937",
+    "order_detail_id": "1365755656",
+    "emitted_at": "2025-11-03T23:50:26.850983",
+    "supplier": {
+      "status": "Confirmed",
+      "supplier_id": "KAI",
+      "booking_code": "UQH8HTG",
+      "supplier_ref": "UQH8HTG",
+      "amount_due": 1614500,
+      "currency": "IDR",
+      "fx_context": {
+        "timestamp_fx_rate": "2025-11-03T23:50:26.850983",
+        "payment_currency": "IDR",
+        "supply_currency": "IDR",
+        "record_currency": "IDR",
+        "gbv_currency": "IDR",
+        "payment_value": 1614500, 
+        "supply_to_payment_fx_rate": 1.0,
+        "supply_to_record_fx_rate": 1.0,
+        "payment_to_gbv_fx_rate": 1.0,
+        "source": "Treasury"
+      },
+      "entity_context": {
+        "entity_code": "GTN"
+      }
+    },
+    "idempotency_key": "1327314937:1365755656:KAI:confirmed"
+  }

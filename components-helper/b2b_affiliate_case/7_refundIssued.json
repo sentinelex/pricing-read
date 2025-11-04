@@ -1,0 +1,21 @@
+{
+    "event_type": "refund.issued",
+    "schema_version": "refund.components.v1",
+    "order_id": "1200496236",
+    "refund_id": "RFD-001",
+    "components": [
+      {
+        "is_refund": true,
+        "component_type": "RoomRate",
+        "amount": -100000,
+        "currency": "IDR",
+        "dimensions": {
+          "order_detail_id": "1200917821"
+        },
+        "description": "Partial refund - 1 night",
+        "refund_of_component_semantic_id": "cs-1200496236-1200917821-RoomRate"
+      }
+    ],
+    "emitted_at": "2025-11-03T10:25:05.131098",
+    "emitter_service": "refund-service"
+  }
