@@ -77,7 +77,8 @@ def render_latest_breakdown(db, order_id):
 
     if not regular_components:
         st.warning("No regular pricing components found for this order")
-        return
+        # Return refund components even if no regular components exist
+        return refund_components
 
     # Convert to DataFrame for display
     component_list = []
