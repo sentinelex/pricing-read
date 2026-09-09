@@ -6,6 +6,8 @@ An interactive Streamlit prototype demonstrating the **Unified Pricing Read Laye
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.32+-red.svg)](https://streamlit.io/)
 [![License](https://img.shields.io/badge/License-Internal-yellow.svg)]()
 
+> 📄 **Start here**: [UPRL Proposal & Prototype Documentation](docs/UPRL_PROPOSAL.md) — problem statement, goals, scope, architecture, known weaknesses, and the production migration path. The product does not exist yet; this repository is the proposal artifact.
+
 ## Overview
 
 This prototype simulates the complete data flow from producer events through Order Core ingestion to normalized storage, showcasing:
@@ -640,7 +642,7 @@ Internal use - Tiket.com Order Platform team
 
 ## Quick Links
 
-- 🏠 [Home](app.py): Start the Streamlit app
+- 🏠 [Home](pricing-read/app.py): Start the Streamlit app
 - 📚 [CLAUDE.md](CLAUDE.md): Comprehensive AI guidance
 - 🏗️ [Architecture](docs/ARCHITECTURE.md): System design
 - 🎟️ [Multi-Instance Design](docs/PASSES_REDEMPTION_DESIGN.md): Passes redemption

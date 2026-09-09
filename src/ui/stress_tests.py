@@ -4,7 +4,7 @@ Test edge cases like out-of-order events, duplicates, and idempotency
 """
 import streamlit as st
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 from src.ingestion.pipeline import IngestionPipeline
 
@@ -81,7 +81,7 @@ def render_out_of_order_test(pipeline):
                         "description": "Version 3 - after repricing"
                     }
                 ],
-                "emitted_at": datetime.utcnow().isoformat(),
+                "emitted_at": datetime.now(timezone.utc).isoformat(),
                 "emitter_service": "test-service"
             }
 
@@ -110,7 +110,7 @@ def render_out_of_order_test(pipeline):
                         "description": "Version 2 - first repricing"
                     }
                 ],
-                "emitted_at": datetime.utcnow().isoformat(),
+                "emitted_at": datetime.now(timezone.utc).isoformat(),
                 "emitter_service": "test-service"
             }
 
@@ -151,7 +151,7 @@ def render_duplicate_test(pipeline):
                 "description": "Test component"
             }
         ],
-        "emitted_at": datetime.utcnow().isoformat(),
+        "emitted_at": datetime.now(timezone.utc).isoformat(),
         "emitter_service": "test-service"
     }
 
@@ -164,7 +164,9 @@ def render_duplicate_test(pipeline):
             st.error(f"❌ {result.message}")
             st.json(result.details)
 
-    st.info("**Note**: Currently, duplicate detection is not enforced. In production, use event_id uniqueness constraint or check before insert.")
+    st.info("**Note**: Duplicate detection is enforced via the `processed_events` ledger. "
+            "The first emission ingests normally; repeats are acknowledged as duplicates "
+            "(matched on `event_id` or `idempotency_key`) without reprocessing.")
 
 
 def render_invalid_schema_test(pipeline):
@@ -189,7 +191,7 @@ def render_invalid_schema_test(pipeline):
                 "description": "Invalid component type"
             }
         ],
-        "emitted_at": datetime.utcnow().isoformat(),
+        "emitted_at": datetime.now(timezone.utc).isoformat(),
         "emitter_service": "test-service"
     }
 
@@ -227,7 +229,7 @@ def render_missing_fields_test(pipeline):
                 "dimensions": {}
             }
         ],
-        "emitted_at": datetime.utcnow().isoformat(),
+        "emitted_at": datetime.now(timezone.utc).isoformat(),
         "emitter_service": "test-service"
     }
 
@@ -283,7 +285,7 @@ def render_negative_amount_test(pipeline):
                     "description": "Promo discount"
                 }
             ],
-            "emitted_at": datetime.utcnow().isoformat(),
+            "emitted_at": datetime.now(timezone.utc).isoformat(),
             "emitter_service": "test-service"
         }
     else:  # Refund
@@ -305,7 +307,7 @@ def render_negative_amount_test(pipeline):
                     "refund_of_component_semantic_id": "cs-ORD-9001-OD-OD-001-BaseFare"
                 }
             ],
-            "emitted_at": datetime.utcnow().isoformat(),
+            "emitted_at": datetime.now(timezone.utc).isoformat(),
             "emitter_service": "refund-service"
         }
 
@@ -355,7 +357,7 @@ def render_version_gap_test(pipeline):
                         "description": "Version 1"
                     }
                 ],
-                "emitted_at": datetime.utcnow().isoformat(),
+                "emitted_at": datetime.now(timezone.utc).isoformat(),
                 "emitter_service": "test-service"
             }
 
@@ -384,7 +386,7 @@ def render_version_gap_test(pipeline):
                         "description": "Version 3"
                     }
                 ],
-                "emitted_at": datetime.utcnow().isoformat(),
+                "emitted_at": datetime.now(timezone.utc).isoformat(),
                 "emitter_service": "test-service"
             }
 

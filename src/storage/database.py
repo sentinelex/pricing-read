@@ -3,9 +3,12 @@ SQLite database initialization and management.
 Implements append-only fact tables and derived views.
 """
 import sqlite3
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional
 import json
+
+from src.projection.payables import project_instance_payables, BOOKING_LEVEL
 
 
 class Database:
@@ -15,6 +18,33 @@ class Database:
         self.db_path = db_path
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         self.conn: Optional[sqlite3.Connection] = None
+        self._in_transaction = False
+
+    @contextmanager
+    def transaction(self):
+        """
+        Group writes into one atomic unit: commit on success, roll back on
+        any exception. Insert methods defer their commits while active, so
+        an event's writes land all-or-nothing. Re-entrant (inner joins outer).
+        """
+        self._ensure_connected()
+        if self._in_transaction:
+            yield
+            return
+        self._in_transaction = True
+        try:
+            yield
+            self.conn.commit()
+        except Exception:
+            self.conn.rollback()
+            raise
+        finally:
+            self._in_transaction = False
+
+    def _commit(self):
+        """Commit immediately unless a transaction() block owns the commit."""
+        if not self._in_transaction:
+            self.conn.commit()
 
     def connect(self):
         """Establish database connection"""
@@ -35,38 +65,83 @@ class Database:
             # Connection is closed or broken, reconnect
             self.connect()
 
+    # Ordered, numbered schema migrations. NEVER renumber or edit an entry
+    # once shipped — append new entries. Each column-add migration declares
+    # its target so it can be skipped (and recorded) when already satisfied.
+    MIGRATIONS = [
+        {
+            'version': 1,
+            'description': 'Add fulfillment_instance_id to supplier_timeline (2025-11-13)',
+            'table': 'supplier_timeline',
+            'column': 'fulfillment_instance_id',
+            'sql': "ALTER TABLE supplier_timeline ADD COLUMN fulfillment_instance_id TEXT",
+        },
+        {
+            'version': 2,
+            'description': 'Add fulfillment_instance_id to supplier_payable_lines (2025-11-13)',
+            'table': 'supplier_payable_lines',
+            'column': 'fulfillment_instance_id',
+            'sql': "ALTER TABLE supplier_payable_lines ADD COLUMN fulfillment_instance_id TEXT",
+        },
+        {
+            'version': 3,
+            'description': 'Add supplier_reference_id to supplier_payable_lines (2026-07-04)',
+            'table': 'supplier_payable_lines',
+            'column': 'supplier_reference_id',
+            'sql': "ALTER TABLE supplier_payable_lines ADD COLUMN supplier_reference_id TEXT",
+        },
+    ]
+
+    def _table_exists(self, cursor, table_name: str) -> bool:
+        cursor.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
+            (table_name,)
+        )
+        return cursor.fetchone() is not None
+
+    def _column_exists(self, cursor, table_name: str, column_name: str) -> bool:
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        return any(row[1] == column_name for row in cursor.fetchall())
+
     def _run_migrations(self, cursor):
-        """Run schema migrations for existing databases"""
+        """
+        Apply pending numbered migrations, tracked in schema_migrations.
+        Runs before table creation: a migration whose target table does not
+        exist yet (fresh database) is recorded as satisfied, because
+        initialize_schema() creates tables at the current schema.
+        """
+        from datetime import datetime, timezone
 
-        # Helper function to check if table exists
-        def table_exists(table_name):
-            cursor.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-                (table_name,)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS schema_migrations (
+                version INTEGER PRIMARY KEY,
+                description TEXT NOT NULL,
+                applied_at TEXT NOT NULL
             )
-            return cursor.fetchone() is not None
+        """)
+        cursor.execute("SELECT version FROM schema_migrations")
+        applied = {row[0] for row in cursor.fetchall()}
 
-        # Migration 1: Add fulfillment_instance_id to supplier_timeline (2025-11-13)
-        if table_exists('supplier_timeline'):
-            try:
-                cursor.execute("SELECT fulfillment_instance_id FROM supplier_timeline LIMIT 1")
-            except sqlite3.OperationalError:
-                # Column doesn't exist, add it
-                print("🔄 Running migration: Adding fulfillment_instance_id to supplier_timeline...")
-                cursor.execute("ALTER TABLE supplier_timeline ADD COLUMN fulfillment_instance_id TEXT")
-                self.conn.commit()
-                print("✅ Migration complete: supplier_timeline.fulfillment_instance_id added")
+        for migration in self.MIGRATIONS:
+            version = migration['version']
+            if version in applied:
+                continue
 
-        # Migration 2: Add fulfillment_instance_id to supplier_payable_lines (2025-11-13)
-        if table_exists('supplier_payable_lines'):
-            try:
-                cursor.execute("SELECT fulfillment_instance_id FROM supplier_payable_lines LIMIT 1")
-            except sqlite3.OperationalError:
-                # Column doesn't exist, add it
-                print("🔄 Running migration: Adding fulfillment_instance_id to supplier_payable_lines...")
-                cursor.execute("ALTER TABLE supplier_payable_lines ADD COLUMN fulfillment_instance_id TEXT")
-                self.conn.commit()
-                print("✅ Migration complete: supplier_payable_lines.fulfillment_instance_id added")
+            needs_apply = (
+                self._table_exists(cursor, migration['table'])
+                and not self._column_exists(cursor, migration['table'], migration['column'])
+            )
+            if needs_apply:
+                print(f"🔄 Running migration {version}: {migration['description']}")
+                cursor.execute(migration['sql'])
+                print(f"✅ Migration {version} complete")
+
+            cursor.execute(
+                "INSERT INTO schema_migrations (version, description, applied_at) VALUES (?, ?, ?)",
+                (version, migration['description'],
+                 datetime.now(timezone.utc).isoformat())
+            )
+        self._commit()
 
     def initialize_schema(self):
         """Create all tables and views with migration support"""
@@ -264,6 +339,22 @@ class Database:
             )
         """)
 
+        # Processed events ledger: enforces idempotency at ingestion
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS processed_events (
+                event_id TEXT PRIMARY KEY,
+                idempotency_key TEXT,
+                event_type TEXT NOT NULL,
+                order_id TEXT,
+                ingested_at TEXT NOT NULL
+            )
+        """)
+        cursor.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_processed_events_idempotency
+            ON processed_events(idempotency_key)
+            WHERE idempotency_key IS NOT NULL
+        """)
+
         # Derived view: Latest Pricing Breakdown (per semantic component)
         cursor.execute("""
             CREATE VIEW IF NOT EXISTS order_pricing_latest AS
@@ -308,7 +399,7 @@ class Database:
             )
         """)
 
-        self.conn.commit()
+        self._commit()
 
     def insert_pricing_component(self, component: dict):
         """Insert normalized pricing component"""
@@ -326,7 +417,7 @@ class Database:
             'is_refund': 1 if component.get('is_refund') else 0,  # Convert bool to SQLite INTEGER
             'metadata': json.dumps(component.get('metadata'))
         })
-        self.conn.commit()
+        self._commit()
 
     def insert_payment_timeline(self, entry: dict):
         """Insert payment timeline entry"""
@@ -344,7 +435,7 @@ class Database:
             'instrument_json': entry.get('instrument_json'),  # JSON string or None
             'metadata': json.dumps(entry.get('metadata'))
         })
-        self.conn.commit()
+        self._commit()
 
     def insert_supplier_timeline(self, entry: dict):
         """Insert supplier timeline entry (supports both v1 and v2 schema + multi-instance)"""
@@ -370,7 +461,7 @@ class Database:
             'entity_context': entry.get('entity_context'),  # JSON string
             'metadata': json.dumps(entry.get('metadata')) if entry.get('metadata') else None
         })
-        self.conn.commit()
+        self._commit()
 
     def insert_payable_line(self, entry: dict):
         """Insert supplier payable line (supports both v1 and v2 schema with amount_effect, party_type, and multi-instance)"""
@@ -391,7 +482,7 @@ class Database:
             'amount_effect': entry.get('amount_effect', 'INCREASES_PAYABLE'),  # Default to INCREASES_PAYABLE for v1
             'metadata': json.dumps(entry.get('metadata')) if entry.get('metadata') else None
         })
-        self.conn.commit()
+        self._commit()
 
     def insert_refund_timeline(self, entry: dict):
         """Insert refund timeline entry"""
@@ -406,7 +497,7 @@ class Database:
             **entry,
             'metadata': json.dumps(entry.get('metadata'))
         })
-        self.conn.commit()
+        self._commit()
 
     def insert_dlq(self, dlq_entry: dict):
         """Insert DLQ entry"""
@@ -418,7 +509,40 @@ class Database:
                 :error_type, :error_message, :failed_at, :retry_count
             )
         """, dlq_entry)
-        self.conn.commit()
+        self._commit()
+
+    def find_processed_event(self, event_id: str, idempotency_key: str = None):
+        """
+        Check if an event was already successfully processed.
+        Returns the matching ledger row (by event_id or idempotency_key), or None.
+        """
+        self._ensure_connected()
+        cursor = self.conn.cursor()
+        if idempotency_key:
+            cursor.execute("""
+                SELECT * FROM processed_events
+                WHERE event_id = ? OR idempotency_key = ?
+                LIMIT 1
+            """, (event_id, idempotency_key))
+        else:
+            cursor.execute(
+                "SELECT * FROM processed_events WHERE event_id = ? LIMIT 1",
+                (event_id,)
+            )
+        return cursor.fetchone()
+
+    def record_processed_event(self, event_id: str, event_type: str,
+                               order_id: str = None, idempotency_key: str = None,
+                               ingested_at: str = None):
+        """Record a successfully processed event in the idempotency ledger"""
+        self._ensure_connected()
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            INSERT OR IGNORE INTO processed_events
+            (event_id, idempotency_key, event_type, order_id, ingested_at)
+            VALUES (?, ?, ?, ?, ?)
+        """, (event_id, idempotency_key, event_type, order_id, ingested_at))
+        self._commit()
 
     def get_order_pricing_latest(self, order_id: str):
         """Get latest pricing breakdown for an order"""
@@ -648,26 +772,14 @@ class Database:
         ]
         return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
-    def get_total_effective_payables(self, order_id: str):
+    def get_latest_supplier_statuses(self, order_id: str):
         """
-        Get effective payables using party-level projection with amount_effect.
-
-        NEW v2 Logic:
-        1. Get baseline from latest supplier_timeline.status per order_detail
-        2. Use party-level projection: latest obligation per (party_id, obligation_type)
-        3. Apply amount_effect: INCREASES_PAYABLE adds, DECREASES_PAYABLE subtracts
-        4. Conditionally include timeline-linked vs standalone based on status
-
-        Status rules:
-        - ISSUED/Confirmed: baseline = amount_due (with amount_basis display), include ALL obligations
-        - CancelledWithFee: baseline = cancellation_fee, EXCLUDE timeline obligations (version >= 1), keep standalone (version = -1)
-        - CancelledNoFee: baseline = 0, EXCLUDE timeline obligations, keep standalone
+        Latest supplier_timeline row per fulfillment instance:
+        (order_detail_id, supplier_reference_id, fulfillment_instance_id).
+        Multi-instance orders (e.g. passes) return one row per redemption.
         """
         self._ensure_connected()
         cursor = self.conn.cursor()
-
-        # Step 1: Get latest status per (order_detail_id, supplier_reference_id, fulfillment_instance_id)
-        # NEW: Multi-instance support - returns multiple rows for passes (one per redemption)
         cursor.execute("""
             WITH latest_status AS (
                 SELECT
@@ -693,203 +805,56 @@ class Database:
             SELECT * FROM latest_status WHERE rn = 1
         """, (order_id,))
 
-        latest_statuses = [dict(zip(
+        return [dict(zip(
             ['order_id', 'order_detail_id', 'supplier_id', 'supplier_reference_id',
              'fulfillment_instance_id', 'status', 'amount', 'amount_basis', 'cancellation_fee_amount', 'currency',
              'supplier_timeline_version', 'rn'],
             row
         )) for row in cursor.fetchall()]
 
+    def get_payable_lines_for_instance(self, order_id: str, order_detail_id: str,
+                                       supplier_reference_id: str, fulfillment_instance_id: str = None):
+        """
+        All payable lines (every version, including standalone -1) scoped to
+        one fulfillment instance. Version selection is projection logic, not SQL.
+
+        Standalone adjustments (version = -1) without a supplier_reference_id
+        are detail-level obligations: they attach to the detail's booking-level
+        instance (the invariant is that standalone adjustments are ALWAYS
+        included; the instance COALESCE keeps them off per-redemption rows).
+        """
+        self._ensure_connected()
+        instance_key = fulfillment_instance_id if fulfillment_instance_id else BOOKING_LEVEL
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            SELECT supplier_timeline_version, obligation_type, party_type,
+                   party_id, party_name, amount, amount_effect, currency
+            FROM supplier_payable_lines
+            WHERE order_id = ? AND order_detail_id = ?
+              AND (supplier_reference_id = ?
+                   OR (supplier_timeline_version = -1 AND supplier_reference_id IS NULL))
+              AND COALESCE(fulfillment_instance_id, ?) = ?
+            ORDER BY rowid
+        """, (order_id, order_detail_id, supplier_reference_id, BOOKING_LEVEL, instance_key))
+        cols = ['supplier_timeline_version', 'obligation_type', 'party_type',
+                'party_id', 'party_name', 'amount', 'amount_effect', 'currency']
+        return [dict(zip(cols, row)) for row in cursor.fetchall()]
+
+    def get_total_effective_payables(self, order_id: str):
+        """
+        Effective payables per fulfillment instance using party-level
+        projection with amount_effect. Business rules live in
+        src/projection/payables.py; this method only fetches rows.
+        """
         result = []
-
-        for status_row in latest_statuses:
-            order_detail_id = status_row['order_detail_id']
-            supplier_reference_id = status_row['supplier_reference_id']
-            fulfillment_instance_id = status_row['fulfillment_instance_id']  # NEW: Multi-instance support
-            fulfillment_instance_key = fulfillment_instance_id if fulfillment_instance_id else '__BOOKING_LEVEL__'  # For scoping
-            status = status_row['status']
-            amount_basis = status_row['amount_basis']
-
-            # Calculate baseline from status
-            # NEW: Cancellation fees are now in party lines, so baseline is always 0 for cancelled
-            if status in ('Confirmed', 'ISSUED', 'Invoiced', 'Settled'):
-                baseline_amount = status_row['amount'] or 0
-                baseline_reason = f"Supplier cost (status: {status}" + (f", basis: {amount_basis}" if amount_basis else "") + ")"
-                include_timeline_obligations = True
-            elif status == 'CancelledWithFee':
-                # NEW: Fee is in party lines (CANCELLATION_FEE obligation), baseline is 0
-                # Fallback: If no CANCELLATION_FEE line exists (legacy event), use cancellation_fee_amount
-                baseline_amount = 0  # Fee will come from party lines
-                baseline_reason = f"Cancelled (status: {status}, fee in party lines)"
-                include_timeline_obligations = False  # Exclude old timeline obligations when cancelled
-            elif status in ('CancelledNoFee', 'Voided'):
-                baseline_amount = 0
-                baseline_reason = f"Cancelled without fee (status: {status})"
-                include_timeline_obligations = False
-            else:
-                baseline_amount = 0
-                baseline_reason = f"Unknown status: {status}"
-                include_timeline_obligations = False
-
-            # Step 2: Get party-level projection with amount_effect
-            # Key insight: We need to check if the latest supplier_timeline_version has ANY payable lines
-            # - If YES: use party-level projection from that version (Scenario D - adjusted affiliate)
-            # - If NO: exclude all timeline obligations (Scenario B - empty parties array)
-
-            latest_timeline_version = status_row['supplier_timeline_version']
-
-            # Check if the latest supplier_timeline_version has any payable lines (scoped to this instance)
-            cursor.execute("""
-                SELECT COUNT(*) FROM supplier_payable_lines
-                WHERE order_id = ? AND order_detail_id = ?
-                  AND supplier_reference_id = ?
-                  AND COALESCE(fulfillment_instance_id, '__BOOKING_LEVEL__') = ?
-                  AND supplier_timeline_version = ?
-            """, (order_id, order_detail_id, supplier_reference_id, fulfillment_instance_key, latest_timeline_version))
-            has_lines_in_latest_version = cursor.fetchone()[0] > 0
-
-            if include_timeline_obligations:
-                # ISSUED/Confirmed: include ALL timeline obligations (party-level projection scoped to this instance)
-                cursor.execute("""
-                    WITH latest_per_party AS (
-                        SELECT party_id, obligation_type, MAX(supplier_timeline_version) as latest_version
-                        FROM supplier_payable_lines
-                        WHERE order_id = ? AND order_detail_id = ?
-                          AND supplier_reference_id = ?
-                          AND COALESCE(fulfillment_instance_id, '__BOOKING_LEVEL__') = ?
-                          AND supplier_timeline_version >= 1
-                        GROUP BY party_id, obligation_type
-                    )
-                    SELECT p.obligation_type, p.party_type, p.party_id, p.party_name, p.amount, p.amount_effect, p.currency
-                    FROM supplier_payable_lines p
-                    JOIN latest_per_party l
-                      ON p.party_id = l.party_id
-                      AND p.obligation_type = l.obligation_type
-                      AND p.supplier_timeline_version = l.latest_version
-                    WHERE p.order_id = ? AND p.order_detail_id = ?
-                      AND p.supplier_reference_id = ?
-                      AND COALESCE(p.fulfillment_instance_id, '__BOOKING_LEVEL__') = ?
-                """, (order_id, order_detail_id, supplier_reference_id, fulfillment_instance_key, order_id, order_detail_id, supplier_reference_id, fulfillment_instance_key))
-                timeline_obligations = [dict(zip(['obligation_type', 'party_type', 'party_id', 'party_name', 'amount', 'amount_effect', 'currency'], row))
-                                       for row in cursor.fetchall()]
-            else:
-                # CancelledWithFee/CancelledNoFee: check if latest version has lines
-                if has_lines_in_latest_version:
-                    # Scenario D: Latest version has updated parties → include ONLY those (from latest version, scoped to instance)
-                    cursor.execute("""
-                        SELECT obligation_type, party_type, party_id, party_name, amount, amount_effect, currency
-                        FROM supplier_payable_lines
-                        WHERE order_id = ? AND order_detail_id = ?
-                          AND supplier_reference_id = ?
-                          AND COALESCE(fulfillment_instance_id, '__BOOKING_LEVEL__') = ?
-                          AND supplier_timeline_version = ?
-                    """, (order_id, order_detail_id, supplier_reference_id, fulfillment_instance_key, latest_timeline_version))
-                    timeline_obligations = [dict(zip(['obligation_type', 'party_type', 'party_id', 'party_name', 'amount', 'amount_effect', 'currency'], row))
-                                           for row in cursor.fetchall()]
-                else:
-                    # Scenario B: Latest version has NO lines (empty parties array) → exclude all timeline obligations
-                    timeline_obligations = []
-
-            # Get standalone adjustments (version = -1) separately - ALWAYS included (scoped to instance)
-            cursor.execute("""
-                SELECT obligation_type, party_type, party_id, party_name, amount, amount_effect, currency
-                FROM supplier_payable_lines
-                WHERE order_id = ? AND order_detail_id = ?
-                  AND supplier_reference_id = ?
-                  AND COALESCE(fulfillment_instance_id, '__BOOKING_LEVEL__') = ?
-                  AND supplier_timeline_version = -1
-            """, (order_id, order_detail_id, supplier_reference_id, fulfillment_instance_key))
-
-            standalone_obligations = [dict(zip(['obligation_type', 'party_type', 'party_id', 'party_name', 'amount', 'amount_effect', 'currency'], row))
-                                     for row in cursor.fetchall()]
-
-            # Combine timeline + standalone
-            obligations = timeline_obligations + standalone_obligations
-
-            # Step 3: Group obligations by party and calculate party-level payables
-            from collections import defaultdict
-            party_groups = defaultdict(lambda: {'obligations': [], 'total_adjustment': 0})
-
-            # Get supplier party_id from status_row
-            supplier_party_id = status_row['supplier_id']
-
-            for obl in obligations:
-                party_id = obl['party_id']
-                party_groups[party_id]['obligations'].append(obl)
-                party_groups[party_id]['party_type'] = obl.get('party_type', 'UNKNOWN')
-                party_groups[party_id]['party_name'] = obl['party_name']
-
-                # Apply amount_effect logic per party
-                if obl['amount_effect'] == 'INCREASES_PAYABLE':
-                    party_groups[party_id]['total_adjustment'] += obl['amount']
-                elif obl['amount_effect'] == 'DECREASES_PAYABLE':
-                    party_groups[party_id]['total_adjustment'] -= obl['amount']
-
-            # Step 4: Build party-separated payables
-            parties_payables = []
-
-            # Always include supplier party (even if no obligations)
-            supplier_obligations = party_groups[supplier_party_id]['obligations'] if supplier_party_id in party_groups else []
-            supplier_total_adjustment = party_groups[supplier_party_id]['total_adjustment'] if supplier_party_id in party_groups else 0
-
-            # MIGRATION FALLBACK: If CancelledWithFee but no CANCELLATION_FEE line, use legacy field
-            if status == 'CancelledWithFee' and status_row['cancellation_fee_amount']:
-                has_cancellation_fee_line = any(
-                    obl['obligation_type'] == 'CANCELLATION_FEE'
-                    for obl in supplier_obligations
-                )
-                if not has_cancellation_fee_line and status_row['cancellation_fee_amount'] > 0:
-                    # Legacy event - add fee as baseline (deprecated pattern)
-                    baseline_amount = status_row['cancellation_fee_amount']
-                    baseline_reason = f"Cancellation fee (legacy - from cancellation_fee_amount field)"
-
-            supplier_payable = {
-                'party_id': supplier_party_id,
-                'party_type': 'SUPPLIER',
-                'party_name': status_row['supplier_id'],  # Use supplier_id as name fallback
-                'baseline': baseline_amount,
-                'baseline_reason': baseline_reason,
-                'obligations': supplier_obligations,
-                'total_adjustment': supplier_total_adjustment,
-                'total_payable': baseline_amount + supplier_total_adjustment,
-                'currency': status_row['currency']
-            }
-            parties_payables.append(supplier_payable)
-
-            # Add non-supplier parties (affiliates, tax authorities, etc.)
-            for party_id, party_data in party_groups.items():
-                if party_id != supplier_party_id:
-                    party_payable = {
-                        'party_id': party_id,
-                        'party_type': party_data['party_type'],
-                        'party_name': party_data['party_name'],
-                        'baseline': 0,  # Non-supplier parties have no baseline
-                        'baseline_reason': 'No baseline (non-supplier party)',
-                        'obligations': party_data['obligations'],
-                        'total_adjustment': party_data['total_adjustment'],
-                        'total_payable': party_data['total_adjustment'],  # For non-suppliers, total = adjustment only
-                        'currency': status_row['currency']
-                    }
-                    parties_payables.append(party_payable)
-
-            # Step 5: Build result structure
-            result.append({
-                'order_detail_id': order_detail_id,
-                'supplier_reference_id': supplier_reference_id,
-                'fulfillment_instance_id': fulfillment_instance_id,  # NEW: Multi-instance support
-                'supplier_baseline': {
-                    'supplier_id': status_row['supplier_id'],
-                    'amount': baseline_amount,
-                    'amount_basis': amount_basis,
-                    'reason': baseline_reason,
-                    'status': status,
-                    'currency': status_row['currency']
-                },
-                'parties': parties_payables,  # NEW: Party-separated payables
-                'party_obligations': obligations,  # DEPRECATED: Keep for backward compatibility
-                'total_payable': sum(p['total_payable'] for p in parties_payables)  # Sum across all parties
-            })
-
+        for status_row in self.get_latest_supplier_statuses(order_id):
+            lines = self.get_payable_lines_for_instance(
+                order_id,
+                status_row['order_detail_id'],
+                status_row['supplier_reference_id'],
+                status_row['fulfillment_instance_id'],
+            )
+            result.append(project_instance_payables(status_row, lines))
         return result
 
     def get_payables_timeline(self, order_id: str):

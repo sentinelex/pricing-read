@@ -125,11 +125,11 @@ def render_pricing_components_table(db, selected_order: str):
     display_df = df.copy()
     if 'dimensions' in display_df.columns:
         display_df['dimensions'] = display_df['dimensions'].apply(
-            lambda x: json.dumps(json.loads(x), indent=2) if x else None
+            lambda x: json.dumps(json.loads(x), indent=2) if isinstance(x, str) and x else None
         )
     if 'metadata' in display_df.columns:
         display_df['metadata'] = display_df['metadata'].apply(
-            lambda x: json.dumps(json.loads(x), indent=2) if x else None
+            lambda x: json.dumps(json.loads(x), indent=2) if isinstance(x, str) and x else None
         )
 
     # Display with scroll
@@ -192,15 +192,15 @@ def render_payment_timeline_table(db, selected_order: str):
     display_df = df.copy()
     if 'instrument' in display_df.columns:
         display_df['instrument'] = display_df['instrument'].apply(
-            lambda x: json.dumps(json.loads(x), indent=2) if x else None
+            lambda x: json.dumps(json.loads(x), indent=2) if isinstance(x, str) and x else None
         )
     if 'bnpl_plan' in display_df.columns:
         display_df['bnpl_plan'] = display_df['bnpl_plan'].apply(
-            lambda x: json.dumps(json.loads(x), indent=2) if x else None
+            lambda x: json.dumps(json.loads(x), indent=2) if isinstance(x, str) and x else None
         )
     if 'metadata' in display_df.columns:
         display_df['metadata'] = display_df['metadata'].apply(
-            lambda x: json.dumps(json.loads(x), indent=2) if x else None
+            lambda x: json.dumps(json.loads(x), indent=2) if isinstance(x, str) and x else None
         )
 
     st.dataframe(display_df, use_container_width=True, height=400)
@@ -257,15 +257,15 @@ def render_supplier_timeline_table(db, selected_order: str):
     display_df = df.copy()
     if 'fx_context' in display_df.columns:
         display_df['fx_context'] = display_df['fx_context'].apply(
-            lambda x: json.dumps(json.loads(x), indent=2) if x else None
+            lambda x: json.dumps(json.loads(x), indent=2) if isinstance(x, str) and x else None
         )
     if 'entity_context' in display_df.columns:
         display_df['entity_context'] = display_df['entity_context'].apply(
-            lambda x: json.dumps(json.loads(x), indent=2) if x else None
+            lambda x: json.dumps(json.loads(x), indent=2) if isinstance(x, str) and x else None
         )
     if 'metadata' in display_df.columns:
         display_df['metadata'] = display_df['metadata'].apply(
-            lambda x: json.dumps(json.loads(x), indent=2) if x else None
+            lambda x: json.dumps(json.loads(x), indent=2) if isinstance(x, str) and x else None
         )
 
     st.dataframe(display_df, use_container_width=True, height=400)
@@ -330,7 +330,7 @@ def render_supplier_payables_table(db, selected_order: str):
     display_df = df.copy()
     if 'metadata' in display_df.columns:
         display_df['metadata'] = display_df['metadata'].apply(
-            lambda x: json.dumps(json.loads(x), indent=2) if x else None
+            lambda x: json.dumps(json.loads(x), indent=2) if isinstance(x, str) and x else None
         )
 
     st.dataframe(display_df, use_container_width=True, height=400)
@@ -398,7 +398,7 @@ def render_refund_timeline_table(db, selected_order: str):
     display_df = df.copy()
     if 'metadata' in display_df.columns:
         display_df['metadata'] = display_df['metadata'].apply(
-            lambda x: json.dumps(json.loads(x), indent=2) if x else None
+            lambda x: json.dumps(json.loads(x), indent=2) if isinstance(x, str) and x else None
         )
 
     st.dataframe(display_df, use_container_width=True, height=400)
@@ -464,7 +464,7 @@ def render_dlq_table(db, selected_order: str):
     display_df = df.copy()
     if 'raw_event' in display_df.columns:
         display_df['raw_event'] = display_df['raw_event'].apply(
-            lambda x: json.dumps(json.loads(x), indent=2) if x else None
+            lambda x: json.dumps(json.loads(x), indent=2) if isinstance(x, str) and x else None
         )
 
     st.dataframe(display_df, use_container_width=True, height=400)

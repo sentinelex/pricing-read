@@ -14,6 +14,16 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from src.storage.database import Database
 from src.ingestion.pipeline import IngestionPipeline
 
+import os as _os
+import pytest as _pytest
+
+_FIXTURES = _os.path.join(_os.path.dirname(__file__), '..', '..', 'components-helper')
+pytestmark = _pytest.mark.skipif(
+    not _os.path.isdir(_FIXTURES),
+    reason="requires external components-helper/ fixtures not shipped with this repo"
+)
+
+
 
 def test_b2b_affiliate_real_files():
     """Test complete B2B affiliate flow with real JSON files"""

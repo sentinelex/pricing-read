@@ -12,18 +12,34 @@ Run this script to validate the complete implementation.
 
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from src.storage.database import Database
 from src.ingestion.pipeline import IngestionPipeline
 
 
+# The original sample_events/supplier_v2/ fixtures were reorganized into
+# supplier_and_payable_event/ — map the legacy names to their new homes
+_RENAMED_FIXTURES = {
+    "1_issued_with_parties.json":
+        "supplier-lifecycle/001-supplier-issued-multi-party-with-amount-effect.json",
+    "2_cancelled_with_fee_no_parties.json":
+        "supplier-lifecycle/002-supplier-cancelled-projection-based.json",
+    "3_cancelled_with_adjusted_affiliate.json":
+        "supplier-lifecycle/003-supplier-cancelled-adjusted-affiliate.json",
+    "4_affiliate_penalty.json":
+        "partner-adjustment-SF/004-partner-adjustment-standalone-penalty.json",
+}
+_FIXTURE_BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                             "..", "sample_events", "supplier_and_payable_event")
+
+
 def load_sample_event(filename):
     """Load sample event from file"""
-    filepath = os.path.join("sample_events/supplier_v2", filename)
+    filepath = os.path.join(_FIXTURE_BASE, _RENAMED_FIXTURES.get(filename, filename))
     with open(filepath, 'r') as f:
         event = json.load(f)
     # Update timestamp
-    event["emitted_at"] = datetime.utcnow().isoformat()
+    event["emitted_at"] = datetime.now(timezone.utc).isoformat()
     return event
 
 
@@ -61,12 +77,12 @@ def test_scenario_a():
     """
     Scenario A: Issued → Effective Payables Includes All Parties
 
-    Expected Outcome:
-    - Baseline: 300000 IDR (gross)
-    - Supplier commission retention: -45000 IDR (DECREASES_PAYABLE)
+    Expected Outcome (per current fixture values):
+    - Baseline: 1500000 IDR (gross)
+    - Supplier commission retention: -150000 IDR (DECREASES_PAYABLE)
     - Affiliate commission: +4694 IDR (INCREASES_PAYABLE)
     - VAT on affiliate: +516 IDR (INCREASES_PAYABLE)
-    - Total: 300000 - 45000 + 4694 + 516 = 260210 IDR
+    - Total: 1500000 - 150000 + 4694 + 516 = 1355210 IDR
     """
     print_section("SCENARIO A: Issued with Multi-Party Obligations")
 
@@ -90,16 +106,15 @@ def test_scenario_a():
     # Validate
     assert len(payables) == 1, "Should have 1 order_detail"
     detail = payables[0]
-    assert detail['supplier_baseline']['amount'] == 300000, "Baseline should be 300000"
+    assert detail['supplier_baseline']['amount'] == 1500000, "Baseline should be 1500000"
     assert detail['supplier_baseline']['amount_basis'] == "gross", "Basis should be gross"
     assert len(detail['party_obligations']) == 3, "Should have 3 party obligations"
 
     # Validate amount_effect logic
-    expected_total = 300000 - 45000 + 4694 + 516  # 260210
+    expected_total = 1500000 - 150000 + 4694 + 516  # 1355210
     assert detail['total_payable'] == expected_total, f"Total should be {expected_total}, got {detail['total_payable']}"
 
     print("\n✅ SCENARIO A PASSED: All party obligations included with correct amount_effect")
-    return db
 
 
 def test_scenario_b():
@@ -108,9 +123,10 @@ def test_scenario_b():
 
     Expected Outcome:
     v1: Same as Scenario A (260210 IDR total)
-    v2: Cancelled with empty parties array
-    - Baseline: 50000 IDR (cancellation fee)
-    - Affiliate obligations EXCLUDED (timeline-linked, version >= 1)
+    v2: CancelledWithFee, parties carry only CANCELLATION_FEE
+    - Baseline: 0 (fee is a party line, not the legacy fee field)
+    - v1 affiliate obligations EXCLUDED (only latest-version lines apply)
+    - Obligations: CANCELLATION_FEE +50000
     - Total: 50000 IDR
     """
     print_section("SCENARIO B: Cancelled with Projection (Empty Parties Array)")
@@ -138,12 +154,12 @@ def test_scenario_b():
     # Validate
     detail = payables[0]
     assert detail['supplier_baseline']['status'] == "CancelledWithFee", "Status should be CancelledWithFee"
-    assert detail['supplier_baseline']['amount'] == 50000, "Baseline should be cancellation fee (50000)"
-    assert len(detail['party_obligations']) == 0, "Should have NO party obligations (timeline excluded)"
-    assert detail['total_payable'] == 50000, "Total should be baseline only (50000)"
+    assert detail['supplier_baseline']['amount'] == 0, "Baseline is 0 (fee is a party line)"
+    assert len(detail['party_obligations']) == 1, "Only the latest-version CANCELLATION_FEE applies"
+    assert detail['party_obligations'][0]['obligation_type'] == "CANCELLATION_FEE"
+    assert detail['total_payable'] == 50000, "Total is the cancellation fee (50000)"
 
     print("\n✅ SCENARIO B PASSED: Projection correctly excludes timeline obligations on cancellation")
-    return db
 
 
 def test_scenario_c():
@@ -154,7 +170,7 @@ def test_scenario_c():
     v1: Issued (260210 IDR)
     v2: Cancelled (50000 IDR baseline, timeline excluded)
     v3: Partner Penalty (standalone, version = -1)
-    - Baseline: 50000 IDR
+    - Baseline: 0 (fee is a party line: CANCELLATION_FEE +50000)
     - Affiliate penalty: +500000 IDR (INCREASES_PAYABLE, version = -1)
     - Total: 50000 + 500000 = 550000 IDR
     """
@@ -188,9 +204,10 @@ def test_scenario_c():
     # Validate
     detail = payables[0]
     assert detail['supplier_baseline']['status'] == "CancelledWithFee", "Status should be CancelledWithFee"
-    assert len(detail['party_obligations']) == 1, "Should have 1 standalone obligation (penalty)"
+    assert len(detail['party_obligations']) == 2, "CANCELLATION_FEE (timeline) + penalty (standalone)"
 
-    penalty_obl = detail['party_obligations'][0]
+    penalty_obl = next(o for o in detail['party_obligations']
+                       if o['obligation_type'] == 'AFFILIATE_PENALTY')
     assert penalty_obl['obligation_type'] == "AFFILIATE_PENALTY", "Should be AFFILIATE_PENALTY"
     assert penalty_obl['amount'] == 500000, "Penalty amount should be 500000"
     assert penalty_obl['amount_effect'] == "INCREASES_PAYABLE", "Should increase payable"
@@ -199,7 +216,6 @@ def test_scenario_c():
     assert detail['total_payable'] == expected_total, f"Total should be {expected_total}"
 
     print("\n✅ SCENARIO C PASSED: Standalone penalty persists regardless of supplier status")
-    return db
 
 
 def test_scenario_d():
@@ -209,9 +225,9 @@ def test_scenario_d():
     Expected Outcome:
     v1: Issued (original affiliate commission based on booking)
     v2: Cancelled with UPDATED parties array (affiliate adjusted to cancellation fee basis)
-    - Baseline: 75000 IDR (cancellation fee)
-    - Timeline obligations EXCLUDED (version >= 1 from v1)
-    - NEW obligations from v2 parties array (latest wins):
+    - Baseline: 0 (fee is a party line)
+    - v1 obligations EXCLUDED (only latest-version lines apply):
+      - Cancellation fee: +75000 IDR (INCREASES_PAYABLE)
       - Affiliate commission: +2000 IDR (adjusted, INCREASES_PAYABLE)
       - VAT: +220 IDR (INCREASES_PAYABLE)
     - Total: 75000 + 2000 + 220 = 77220 IDR
@@ -224,18 +240,19 @@ def test_scenario_d():
     db.initialize_schema()
     pipeline = IngestionPipeline(db)
 
-    # Note: Using ORD-9002 for this scenario
+    # Same partition as fixture 003 (ORD-9001 / OD-001 / REF-AGODA-002)
     # Emit v1: Issued (we'll create a simple one inline)
     event_v1 = {
-        "event_id": "evt_issued_v1_ord9002",
+        "event_id": "evt_issued_v1_ord9001d",
         "event_type": "SupplierLifecycleEvent",
         "schema_version": "supplier.timeline.v2",
-        "order_id": "ORD-9002",
-        "order_detail_id": "OD-002",
-        "emitted_at": datetime.utcnow().isoformat(),
+        "order_id": "ORD-9001",
+        "order_detail_id": "OD-001",
+        "emitted_at": datetime.now(timezone.utc).isoformat(),
         "supplier": {
             "status": "ISSUED",
             "supplier_id": "AGODA",
+            "supplier_ref": "REF-AGODA-002",
             "amount_due": 350000,
             "amount_basis": "gross",
             "currency": "IDR"
@@ -265,25 +282,24 @@ def test_scenario_d():
     print(f"✅ v2: {result_v2.message}")
 
     # Query payables
-    payables = db.get_total_effective_payables("ORD-9002")
+    payables = db.get_total_effective_payables("ORD-9001")
     print_payables(payables)
 
     # Validate
     detail = payables[0]
     assert detail['supplier_baseline']['status'] == "CancelledWithFee", "Status should be CancelledWithFee"
-    assert detail['supplier_baseline']['amount'] == 75000, "Baseline should be 75000"
+    assert detail['supplier_baseline']['amount'] == 0, "Baseline is 0 (fee is a party line)"
 
-    # Should have 2 obligations from v2 (latest wins, v1 excluded by timeline filtering)
-    assert len(detail['party_obligations']) == 2, f"Should have 2 obligations from v2, got {len(detail['party_obligations'])}"
+    # All 3 latest-version lines apply (fee + adjusted affiliate + VAT)
+    assert len(detail['party_obligations']) == 3, f"Should have 3 obligations from v2, got {len(detail['party_obligations'])}"
 
     affiliate_comm = next(o for o in detail['party_obligations'] if o['obligation_type'] == 'AFFILIATE_COMMISSION')
     assert affiliate_comm['amount'] == 2000, "Affiliate commission should be adjusted to 2000"
 
-    expected_total = 75000 + 2000 + 220  # 77220
+    expected_total = 0 + 75000 + 2000 + 220  # 77220
     assert detail['total_payable'] == expected_total, f"Total should be {expected_total}, got {detail['total_payable']}"
 
     print("\n✅ SCENARIO D PASSED: Latest obligations win via party-level projection")
-    return db
 
 
 def run_all_tests():

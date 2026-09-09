@@ -16,8 +16,12 @@ from src.storage.database import Database
 from src.ingestion.pipeline import IngestionPipeline
 
 
-def test_b2b_affiliate_complete_flow():
-    """Test complete B2B affiliate flow with all 4 events"""
+def test_b2b_affiliate_complete_flow(db, pipeline):
+    """
+    Test complete B2B affiliate flow with all 4 events.
+    Uses the isolated conftest fixtures — this test previously wrote into
+    the live data/uprl.db, polluting demo data and colliding with itself.
+    """
 
     print("=" * 80)
     print("TEST: B2B AFFILIATE COMPLETE FLOW (REAL SCHEMA)")
@@ -27,11 +31,6 @@ def test_b2b_affiliate_complete_flow():
     print("- Vertical: Accommodation")
     print("- Supplier: NATIVE")
     print("- Commission: 10% shareback on markup + 11% VAT\n")
-
-    db = Database("data/uprl.db")
-    db.connect()
-    db.initialize_schema()  # Ensure schema exists
-    pipeline = IngestionPipeline(db)
 
     order_id = "1200496236"
     order_detail_id = "1200917821"
@@ -125,8 +124,7 @@ def test_b2b_affiliate_complete_flow():
                 print(f"    - {comp['component_type']}: IDR {comp['amount'] / 100:,.2f}")
             print(f"    TOTAL: IDR {total / 100:,.2f}")
     else:
-        print(f"  ❌ {result.message}")
-        return False
+        assert False, f"ingestion failed: {result.message}"
 
     # =========================================================================
     # EVENT 2: Payment Authorized (AFFILIATE_DEPOSIT)
@@ -169,8 +167,7 @@ def test_b2b_affiliate_complete_flow():
     if result.success:
         print(f"  ✅ {result.message}")
     else:
-        print(f"  ❌ {result.message}")
-        return False
+        assert False, f"ingestion failed: {result.message}"
 
     # =========================================================================
     # EVENT 3: Payment Captured
@@ -213,8 +210,7 @@ def test_b2b_affiliate_complete_flow():
     if result.success:
         print(f"  ✅ {result.message}")
     else:
-        print(f"  ❌ {result.message}")
-        return False
+        assert False, f"ingestion failed: {result.message}"
 
     # =========================================================================
     # EVENT 4: Supplier Issuance with Affiliate Shareback
@@ -288,8 +284,7 @@ def test_b2b_affiliate_complete_flow():
     if result.success:
         print(f"  ✅ {result.message}")
     else:
-        print(f"  ❌ {result.message}")
-        return False
+        assert False, f"ingestion failed: {result.message}"
 
     # =========================================================================
     # VERIFICATION: Financial Summary
@@ -330,20 +325,9 @@ def test_b2b_affiliate_complete_flow():
     print("  ✅ Real schema supports complex B2B financial flows")
 
     db.close()
-    return True
 
 
 if __name__ == "__main__":
-    success = test_b2b_affiliate_complete_flow()
-
-    if success:
-        print("\n🎉 B2B AFFILIATE TEST PASSED!")
-        print("\nNext steps:")
-        print("  1. View order in Order Explorer: order_id = 1200496236")
-        print("  2. Check Latest Breakdown for RoomRate + Markup components")
-        print("  3. Review Payment Timeline (AFFILIATE_DEPOSIT channel)")
-        print("  4. Verify supplier entity context (GTN vs TNPL)")
-        exit(0)
-    else:
-        print("\n❌ B2B AFFILIATE TEST FAILED")
-        exit(1)
+    # Uses pytest fixtures for DB isolation — run via pytest
+    import subprocess
+    raise SystemExit(subprocess.call(["pytest", __file__, "-v"]))

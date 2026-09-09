@@ -493,20 +493,29 @@ prototype/
 
 ### Task 4: Update Database Schema
 
+Schema changes are numbered migrations tracked in the `schema_migrations`
+table (version, description, applied_at). Never renumber or edit a shipped
+entry — always append.
+
 **Steps**:
-1. Add migration logic in `database.py::_run_migrations()`
-2. Use `table_exists()` helper to check table presence
-3. Use try/except to check column presence:
+1. Append an entry to `Database.MIGRATIONS` in `database.py`:
    ```python
-   try:
-       cursor.execute("SELECT new_column FROM table_name LIMIT 1")
-   except sqlite3.OperationalError:
-       cursor.execute("ALTER TABLE table_name ADD COLUMN new_column TYPE")
+   {
+       'version': <next integer>,
+       'description': 'Add new_column to table_name (YYYY-MM-DD)',
+       'table': 'table_name',
+       'column': 'new_column',
+       'sql': "ALTER TABLE table_name ADD COLUMN new_column TYPE",
+   }
    ```
-4. Update `initialize_schema()` for new databases
-5. Update insertion methods to include new columns
-6. Update query methods to return new columns
-7. Test with fresh database and existing database
+   A migration is recorded as satisfied without running when its target
+   table doesn't exist yet (fresh DB) or the column is already present.
+2. Update `initialize_schema()` CREATE TABLE so new databases are current
+3. Update insertion methods to include new columns
+4. Update query methods to return new columns
+5. Run `python tests/test_migrations.py` — it covers fresh, legacy, and
+   idempotent re-run paths
+6. Test with fresh database and existing database
 
 ### Task 5: Fix Pydantic Model Issues
 
@@ -581,8 +590,11 @@ prototype/
 # Start prototype
 streamlit run app.py
 
-# Run tests
-python tests/test_b2b_real_files.py
+# Run the full test suite (single entry point)
+pytest
+
+# Run one suite
+pytest tests/test_payable_projection.py
 
 # Debug multi-instance
 python debug_multi_instance.py

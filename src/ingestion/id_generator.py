@@ -9,6 +9,25 @@ from typing import Dict
 class IDGenerator:
     """Generates dual IDs for pricing components"""
 
+    # Closed registry of dimension-key abbreviations. The semantic ID format
+    # is a cross-service contract (refund events reference these IDs), so an
+    # abbreviation must NEVER change once events using it exist. Register new
+    # frequently-used keys here; unregistered keys use the full uppercased
+    # key, which cannot collide by truncation.
+    KNOWN_DIMENSION_ABBREVIATIONS = {
+        'order_detail_id': 'OD',
+        'pax_id': 'P',
+        'leg_id': 'L',
+        'night_id': 'N',
+        'room_id': 'R',
+        'segment_id': 'S',
+        # Grandfathered from the legacy 3-char truncation — IDs already in
+        # the wild depend on these exact values
+        'passenger_id': 'PAS',
+        'profile_id': 'PRO',
+        'funding_source': 'FUN',
+    }
+
     @staticmethod
     def generate_semantic_id(
         order_id: str,
@@ -27,22 +46,26 @@ class IDGenerator:
 
         This ID stays constant across repricing, refunds, or lifecycle changes.
         For refund components, including refund_id ensures uniqueness.
+
+        Raises ValueError if two dimension keys abbreviate identically —
+        a silent collision would merge distinct components in projections.
         """
         # Sort dimensions for canonical ordering
         sorted_dims = sorted(dimensions.items())
 
         # Build dimension string
         dim_parts = []
+        seen_abbreviations: Dict[str, str] = {}
         for key, value in sorted_dims:
-            # Abbreviate common keys
-            key_abbrev = {
-                'order_detail_id': 'OD',
-                'pax_id': 'P',
-                'leg_id': 'L',
-                'night_id': 'N',
-                'room_id': 'R',
-                'segment_id': 'S'
-            }.get(key, key.upper()[:3])
+            key_abbrev = IDGenerator.KNOWN_DIMENSION_ABBREVIATIONS.get(key, key.upper())
+
+            other = seen_abbreviations.get(key_abbrev)
+            if other is not None and other != key:
+                raise ValueError(
+                    f"Dimension abbreviation collision: '{key}' and '{other}' "
+                    f"both abbreviate to '{key_abbrev}'"
+                )
+            seen_abbreviations[key_abbrev] = key
 
             dim_parts.append(f"{key_abbrev}-{value}")
 

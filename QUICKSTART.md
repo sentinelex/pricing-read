@@ -151,7 +151,7 @@ Expected output: ✅ ALL TESTS PASSED!
 
 After exploring the prototype:
 
-1. Read [README.md](README.md) for detailed architecture
+1. Read [README.md](pricing-read/README.md) for detailed architecture
 2. Review [prototype.md](prototype.md) for implementation details
 3. Check `src/` code to understand the pipeline logic
 4. Consult [../prd_v2.md](../prd_v2.md) for product requirements

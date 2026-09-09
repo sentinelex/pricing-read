@@ -4,7 +4,7 @@ Allows users to emit sample events from different producers
 """
 import streamlit as st
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from src.ingestion.pipeline import IngestionPipeline
 from src.ui.json_loader import load_json_files_from_directory, get_sample_events_directory, get_available_topics
 from src.ui.json_editor import render_json_editor_with_hints, render_json_editor
@@ -124,7 +124,7 @@ def render_event_tab(
                     event = selected_json.copy()
                     # Update timestamp if it exists
                     if "emitted_at" in event:
-                        event["emitted_at"] = datetime.utcnow().isoformat()
+                        event["emitted_at"] = datetime.now(timezone.utc).isoformat()
                 else:
                     event = {}
                     st.warning(f"Could not load selected scenario: {scenario}")
@@ -220,7 +220,7 @@ def render_pricing_events(pipeline):
             "customer_total": 1500000,
             "currency": "IDR"
         },
-        "emitted_at": datetime.utcnow().isoformat(),
+        "emitted_at": datetime.now(timezone.utc).isoformat(),
         "emitter_service": "vertical-service"
     }
 
@@ -242,7 +242,7 @@ def render_payment_events(pipeline):
         "event_type": "payment.captured",
         "schema_version": "payment.timeline.v1",
         "order_id": "ORD-NEW",
-        "emitted_at": datetime.utcnow().isoformat(),
+        "emitted_at": datetime.now(timezone.utc).isoformat(),
         "payment": {
             "status": "Captured",
             "payment_id": "pi_new123",
@@ -254,10 +254,10 @@ def render_payment_events(pipeline):
             },
             "currency": "IDR",
             "authorized_amount": 1715000,
-            "authorized_at": datetime.utcnow().isoformat(),
+            "authorized_at": datetime.now(timezone.utc).isoformat(),
             "captured_amount": 1715000,
             "captured_amount_total": 1715000,
-            "captured_at": datetime.utcnow().isoformat(),
+            "captured_at": datetime.now(timezone.utc).isoformat(),
             "instrument": None,
             "bnpl_plan": None
         },
@@ -283,7 +283,7 @@ def render_supplier_events(pipeline):
         "schema_version": "supplier.timeline.v1",
         "order_id": "ORD-NEW",
         "order_detail_id": "OD-001",
-        "emitted_at": datetime.utcnow().isoformat(),
+        "emitted_at": datetime.now(timezone.utc).isoformat(),
         "supplier": {
             "status": "Confirmed",
             "supplier_id": "AGODA",
@@ -292,7 +292,7 @@ def render_supplier_events(pipeline):
             "amount_due": 180.00,
             "currency": "USD",
             "fx_context": {
-                "timestamp_fx_rate": datetime.utcnow().isoformat(),
+                "timestamp_fx_rate": datetime.now(timezone.utc).isoformat(),
                 "payment_currency": "IDR",
                 "supply_currency": "USD",
                 "record_currency": "IDR",
@@ -344,7 +344,7 @@ def render_refund_events(pipeline):
             "refund_amount": 500000,
             "currency": "IDR",
             "refund_reason": "Customer requested cancellation",
-            "emitted_at": datetime.utcnow().isoformat(),
+            "emitted_at": datetime.now(timezone.utc).isoformat(),
             "emitter_service": "refund-service"
         }
 
@@ -377,7 +377,7 @@ def render_refund_events(pipeline):
                     "refund_of_component_semantic_id": "cs-ORD-NEW-OD-001-RoomRate"
                 }
             ],
-            "emitted_at": datetime.utcnow().isoformat(),
+            "emitted_at": datetime.now(timezone.utc).isoformat(),
             "emitter_service": "refund-service"
         }
 
