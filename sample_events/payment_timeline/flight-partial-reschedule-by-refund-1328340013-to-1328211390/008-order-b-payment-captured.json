@@ -1,5 +1,5 @@
 {
-  "event_id": "evt_payment_auth_b_001",
+  "event_id": "evt_payment_captured_b_001",
   "event_type": "PaymentLifecycle",
   "schema_version": "payment.timeline.v1",
   "order_id": "1328211390",

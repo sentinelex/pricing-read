@@ -3,7 +3,7 @@
   "event_type": "PricingUpdated",
   "schema_version": "pricing.commerce.v1",
   "order_id": "1328211390",
-  "emitted_at": "2025-11-11T04:18:00Z",
+  "emitted_at": "2025-11-11T04:25:00Z",
   "emitter_service": "flight-service",
   "vertical": "flight",
   "customer_context": {
@@ -54,11 +54,12 @@
       "amount": -3136582,
       "currency": "IDR",
       "dimensions": {
-        "order_detail_id": "OD-FLIGHT-B-001"
+        "order_detail_id": "1366912401"
       },
       "description": "Refund deposit from 1328340013 applied to 1328211390",
       "meta": {
         "credit_source_order_id": "1328340013",
+        "credit_source_order_detail_id": "1366814317",
         "credit_id": "1354654034",
         "source_refund_id": "4534351",
         "deposit_type": "reschedule_refund"

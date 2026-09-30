@@ -11,5 +11,5 @@
   "currency": "IDR",
   "refund_reason": "CUSTOMER_REQUEST",
   "refund_method": "refund_deposit",
-  "idempotency_key": "refund_timeline_ORD-FLIGHT-A-001_RFD-RESCHEDULE-A-001_closed"
+  "idempotency_key": "refund_timeline_1328340013_4534351_closed"
 }

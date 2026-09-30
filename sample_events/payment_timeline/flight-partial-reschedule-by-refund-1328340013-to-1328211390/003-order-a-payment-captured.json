@@ -18,6 +18,7 @@
     "authorized_at": "2025-11-10T11:05:00Z",
     "captured_amount": 8497424,
     "captured_amount_total": 8497424,
+    "captured_at": "2025-11-10T11:05:00Z",
     "instrument": null
   },
   "idempotency_key": "payment_0328340013_captured_001"

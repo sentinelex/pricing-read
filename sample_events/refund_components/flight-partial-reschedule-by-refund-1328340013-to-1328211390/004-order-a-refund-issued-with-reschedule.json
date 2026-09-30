@@ -45,8 +45,24 @@
         "order_detail_id": "1366814317",
         "passenger_id": "280357115"
       },
-      "description": "Refund of PlatformFee for reschedule",
+      "description": "Refund of Surcharge for reschedule",
       "refund_of_component_semantic_id": "cs-1328340013-OD-1366814317-PAS-280357115-Surcharge",
+      "meta": {
+        "refund_id": "4534351",
+        "to": "deposit"
+      }
+    },
+    {
+      "component_type": "Subsidy",
+      "amount": 15908,
+      "currency": "IDR",
+      "dimensions": {
+        "funding_source": "tiket",
+        "order_detail_id": "1366814317",
+        "passenger_id": "280357115"
+      },
+      "description": "Clawback of tiket-funded subsidy for rescheduled pax (not refundable to customer)",
+      "refund_of_component_semantic_id": "cs-1328340013-FUN-tiket-OD-1366814317-PAS-280357115-Subsidy",
       "meta": {
         "refund_id": "4534351",
         "to": "deposit"
@@ -57,7 +73,11 @@
       "amount": 1089630,
       "currency": "IDR",
       "dimensions": {
-        "order_detail_id": "1328340013"
+        "order_detail_id": "1366814317"
+      },
+      "description": "Airline reschedule fee retained from the refund",
+      "meta": {
+        "refund_id": "4534351"
       }
     },
     {
@@ -69,10 +89,10 @@
       },
       "description": "Customer credit deposit for new order",
       "meta": {
-        "credit_id": "CRD-A-001",
+        "credit_id": "1354654034",
         "reason": "reschedule",
-        "target_order_id": "ORD-FLIGHT-B-001",
-        "calculation": "1,000,000 (refund) - 200,000 (fee) = 800,000 (deposit)"
+        "target_order_id": "1328211390",
+        "calculation": "4,242,120 (gross fare refunded) - 15,908 (subsidy clawback) - 1,089,630 (reschedule fee) = 3,136,582 (deposit)"
       }
     }
   ]

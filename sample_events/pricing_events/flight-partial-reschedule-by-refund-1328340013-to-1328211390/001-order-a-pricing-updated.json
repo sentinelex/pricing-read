@@ -81,11 +81,25 @@
     },
     {
       "component_type": "Subsidy",
-      "amount": -31816,
+      "amount": -15908,
       "currency": "IDR",
       "dimensions": {
-        "funding_source": "tiket"
-      }
+        "funding_source": "tiket",
+        "order_detail_id": "1366814317",
+        "passenger_id": "280357115"
+      },
+      "description": "Tiket-funded subsidy (per-pax share)"
+    },
+    {
+      "component_type": "Subsidy",
+      "amount": -15908,
+      "currency": "IDR",
+      "dimensions": {
+        "funding_source": "tiket",
+        "order_detail_id": "1366814317",
+        "passenger_id": "280357116"
+      },
+      "description": "Tiket-funded subsidy (per-pax share)"
     },
     {
       "component_type": "PlatformFee",

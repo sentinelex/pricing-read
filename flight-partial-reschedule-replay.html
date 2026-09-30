@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+/* Standalone equivalent of the Artifact publish skeleton, so this file renders
+   identically when opened straight from disk. */
+:root{
+  color-scheme:light;
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif;background:#fafafa}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Reschedule Ledger Replay</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F4F6F9;
+  --surface:#FFFFFF;
+  --surface-2:#EAEEF4;
+  --ink:#101722;
+  --ink-2:#4E5A6B;
+  --ink-3:#8492A4;
+  --rule:#DCE3EB;
+  --rule-2:#C2CCD9;
+  --accent:#1B4FC4;
+  --accent-soft:#E3EAFA;
+  --on-accent:#FFFFFF;
+  --reversal:#B0343F;
+  --reversal-soft:#FAE8EA;
+  --fee:#8A5A00;
+  --fee-soft:#F8EFDC;
+  --instrument:#5A3DBE;
+  --instrument-soft:#ECE7FA;
+  --ok:#0C6B4F;
+  --shadow:0 1px 2px rgba(16,23,34,.06),0 8px 24px -12px rgba(16,23,34,.18);
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+  --display:"Archivo","IBM Plex Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1118;
+    --surface:#141B25;
+    --surface-2:#1C2531;
+    --ink:#E7EDF5;
+    --ink-2:#9DACBF;
+    --ink-3:#6C7D92;
+    --rule:#263140;
+    --rule-2:#384556;
+    --accent:#82A4FF;
+    --accent-soft:#1A2440;
+    --on-accent:#0C1118;
+    --reversal:#F2929A;
+    --reversal-soft:#33191D;
+    --fee:#E2B267;
+    --fee-soft:#2D2415;
+    --instrument:#B7A0FF;
+    --instrument-soft:#241D3B;
+    --ok:#4FC79B;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1118;
+  --surface:#141B25;
+  --surface-2:#1C2531;
+  --ink:#E7EDF5;
+  --ink-2:#9DACBF;
+  --ink-3:#6C7D92;
+  --rule:#263140;
+  --rule-2:#384556;
+  --accent:#82A4FF;
+  --accent-soft:#1A2440;
+  --on-accent:#0C1118;
+  --reversal:#F2929A;
+  --reversal-soft:#33191D;
+  --fee:#E2B267;
+  --fee-soft:#2D2415;
+  --instrument:#B7A0FF;
+  --instrument-soft:#241D3B;
+  --ok:#4FC79B;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:28px 64px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+/* ---------- header ---------- */
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 12px
+}
+.masthead h1{font-size:clamp(26px,4.4vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.standfirst{color:var(--ink-2);max-width:62ch;margin:12px 0 0;font-size:15.5px}
+.orderpair{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.oid{
+  display:flex;align-items:baseline;gap:8px;background:var(--surface);border:1px solid var(--rule);
+  border-radius:7px;padding:7px 12px;box-shadow:var(--shadow)
+}
+.oid b{font-family:var(--mono);font-size:13.5px;font-weight:600;letter-spacing:-.01em}
+.oid span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-family:var(--mono)}
+
+/* ---------- scrubber ---------- */
+.scrub{margin-top:32px;background:var(--surface);border:1px solid var(--rule);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.scrub-head{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--rule)}
+.scrub-head h2{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);font-family:var(--mono)}
+.ctrls{display:flex;gap:6px;margin-left:auto}
+.btn{
+  font-family:var(--sans);font-size:13px;font-weight:500;color:var(--ink);
+  background:var(--surface-2);border:1px solid var(--rule);border-radius:7px;
+  padding:6px 12px;cursor:pointer;transition:background .13s,border-color .13s
+}
+.btn:hover:not(:disabled){background:var(--accent-soft);border-color:var(--accent)}
+.btn:disabled{opacity:.42;cursor:default}
+.btn-go{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.btn-go:hover:not(:disabled){filter:brightness(1.08);background:var(--accent)}
+
+.stops{display:flex;gap:0;overflow-x:auto;padding:4px 10px 14px;scrollbar-width:thin}
+.stop{
+  flex:1 0 116px;position:relative;background:none;border:0;padding:20px 8px 8px;cursor:pointer;
+  text-align:left;font-family:var(--sans);color:var(--ink-3);border-radius:8px
+}
+.stop::before{
+  content:"";position:absolute;left:0;right:0;top:13px;height:2px;background:var(--rule)
+}
+.stop:first-child::before{left:50%}
+.stop:last-child::before{right:50%}
+.stop.done::before{background:var(--accent)}
+.stop::after{
+  content:"";position:absolute;left:50%;top:8px;width:12px;height:12px;margin-left:-6px;
+  border-radius:50%;background:var(--ground);border:2px solid var(--rule-2);transition:.15s
+}
+.stop.done::after{background:var(--accent);border-color:var(--accent)}
+.stop.here::after{width:18px;height:18px;margin-left:-9px;top:5px;box-shadow:0 0 0 4px var(--accent-soft)}
+.stop:hover{background:var(--surface-2)}
+.stop-n{display:block;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.04em;margin-top:6px}
+.stop-t{display:block;font-size:11.5px;line-height:1.3;margin-top:3px;word-break:break-word}
+.stop.done .stop-n{color:var(--accent)}
+.stop.here .stop-n,.stop.here .stop-t{color:var(--ink);font-weight:600}
+
+.narr{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;padding:16px;border-top:1px solid var(--rule);background:var(--surface-2)}
+.narr-meta{flex:0 0 232px;min-width:180px}
+.narr-meta .k{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.narr-meta .v{font-family:var(--mono);font-size:12.5px;color:var(--ink);overflow-wrap:anywhere}
+.narr-meta .v+.k{margin-top:9px}
+.narr-body{flex:1 1 300px}
+.narr-body h3{font-size:16.5px;font-weight:600;letter-spacing:-.01em}
+.narr-body p{margin:6px 0 0;color:var(--ink-2);font-size:14px;max-width:70ch}
+
+/* ---------- version families ---------- */
+.fams{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:10px;margin-top:20px}
+.fam{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:11px 13px}
+.fam .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);display:block}
+.fam .val{font-family:var(--mono);font-size:21px;font-weight:600;letter-spacing:-.02em;margin-top:3px;display:block}
+.fam .scope{font-size:11.5px;color:var(--ink-3);display:block;margin-top:1px}
+.fam.bump{border-color:var(--accent);background:var(--accent-soft)}
+.fam.bump .val{color:var(--accent)}
+.fam.idle .val{color:var(--ink-3)}
+
+/* ---------- ledgers ---------- */
+.ledgers{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:18px;margin-top:22px;align-items:start}
+.ledger{background:var(--surface);border:1px solid var(--rule);border-radius:12px;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.ledger.dim{opacity:.5}
+.led-head{padding:14px 16px;border-bottom:1px solid var(--rule)}
+.led-head .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.led-head h2{font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:-.02em;margin-top:2px}
+.led-head .sub{font-size:12.5px;color:var(--ink-2);margin:3px 0 0}
+.rows{list-style:none;margin:0;padding:0}
+.row{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:9px 16px;border-bottom:1px solid var(--rule);align-items:baseline}
+.row:last-child{border-bottom:0}
+.row-l{min-width:0}
+.row-type{font-size:13.5px;font-weight:600;letter-spacing:-.005em}
+.row-dim{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-left:7px;font-weight:400}
+.row-sid{
+  font-family:var(--mono);font-size:10.5px;color:var(--ink-3);margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+.row-amt{font-family:var(--mono);font-size:13.5px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.row-v{
+  font-family:var(--mono);font-size:10px;color:var(--ink-3);border:1px solid var(--rule-2);
+  border-radius:4px;padding:0 4px;margin-right:7px
+}
+.row.role-reversal{background:var(--reversal-soft)}
+.row.role-reversal .row-type,.row.role-reversal .row-amt{color:var(--reversal)}
+.row.role-fee{background:var(--fee-soft)}
+.row.role-fee .row-type,.row.role-fee .row-amt{color:var(--fee)}
+.row.role-instrument{background:var(--instrument-soft)}
+.row.role-instrument .row-type,.row.role-instrument .row-amt{color:var(--instrument)}
+.row.reversed .row-type,.row.reversed .row-dim,.row.reversed .row-sid{opacity:.5}
+.row.reversed .row-amt{opacity:.5;text-decoration:line-through}
+.row.fresh{animation:pop .45s ease-out}
+@keyframes pop{from{background:var(--accent-soft)}}
+@media (prefers-reduced-motion:reduce){.row.fresh{animation:none}.btn,.stop::after{transition:none}}
+.row-note{
+  grid-column:1/-1;font-size:11.5px;color:var(--ink-2);margin-top:1px;
+  padding-left:0;max-width:60ch
+}
+.badge{
+  display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;
+  border-radius:4px;padding:1px 5px;vertical-align:1px;margin-left:7px;font-weight:600
+}
+.badge-rev{background:var(--reversal);color:var(--surface)}
+.badge-new{background:var(--accent);color:var(--on-accent)}
+.led-foot{border-top:2px solid var(--rule-2);padding:12px 16px;display:grid;gap:7px}
+.foot-line{display:flex;justify-content:space-between;gap:12px;align-items:baseline;font-size:13px}
+.foot-line .lbl{color:var(--ink-2)}
+.foot-line .amt{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500}
+.foot-line.strong{font-size:15px}
+.foot-line.strong .lbl{color:var(--ink);font-weight:600}
+.foot-line.strong .amt{font-weight:600;font-size:16px;letter-spacing:-.02em}
+.foot-line.muted .lbl,.foot-line.muted .amt{color:var(--ink-3)}
+.empty{margin:0;padding:34px 16px;text-align:center;color:var(--ink-3);font-size:13px}
+
+/* ---------- panels ---------- */
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:12px;box-shadow:var(--shadow);margin-top:22px;overflow:hidden}
+.panel-head{padding:14px 16px;border-bottom:1px solid var(--rule)}
+.panel-head h2{font-size:17px;font-weight:600;letter-spacing:-.015em}
+.panel-head p{margin:5px 0 0;font-size:13.5px;color:var(--ink-2);max-width:74ch}
+.panel-body{padding:16px}
+
+.recon{width:100%;border-collapse:collapse;font-size:13.5px}
+.recon th,.recon td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule)}
+.recon th{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:500;white-space:nowrap
+}
+.recon td.n{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.recon tr.total td{border-top:2px solid var(--rule-2);border-bottom:0;font-weight:600}
+.recon tr.total td.n{font-size:15px;letter-spacing:-.01em}
+.recon .why{color:var(--ink-2);font-size:12.5px}
+.tblwrap{overflow-x:auto}
+
+.flag{
+  display:flex;gap:11px;padding:13px 14px;border-radius:9px;background:var(--instrument-soft);
+  border:1px solid var(--instrument);margin-top:14px;align-items:flex-start
+}
+.flag .mk{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--instrument);flex:0 0 auto;padding-top:1px}
+.flag p{margin:0;font-size:13.5px;color:var(--ink);max-width:70ch}
+.flag p+p{margin-top:7px}
+.flag code{font-family:var(--mono);font-size:12.5px;background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:1px 5px}
+
+.lin{display:grid;gap:9px}
+.lin-row{
+  display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:11px;align-items:center;
+  padding:10px 12px;background:var(--surface-2);border-radius:8px;font-family:var(--mono);font-size:11.5px
+}
+.lin-row .sid{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lin-row .amt{display:block;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px}
+.lin-row .arw{color:var(--reversal);font-size:15px;flex:0 0 auto}
+.lin-row .to .amt{color:var(--reversal)}
+@media (max-width:560px){
+  .lin-row{grid-template-columns:1fr}
+  .lin-row .arw{transform:rotate(90deg);justify-self:start}
+}
+
+.key{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.key span{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;
+  border-radius:5px;padding:3px 8px;border:1px solid var(--rule-2);color:var(--ink-2)
+}
+.key .k-rev{background:var(--reversal-soft);border-color:var(--reversal);color:var(--reversal)}
+.key .k-fee{background:var(--fee-soft);border-color:var(--fee);color:var(--fee)}
+.key .k-ins{background:var(--instrument-soft);border-color:var(--instrument);color:var(--instrument)}
+
+.foot{margin-top:34px;padding-top:18px;border-top:1px solid var(--rule);color:var(--ink-3);font-size:12.5px}
+.foot code{font-family:var(--mono);font-size:12px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Flight · partial reschedule by refund · production replay</p>
+    <h1>One passenger moves, two orders settle</h1>
+    <p class="standfirst">
+      Garuda Indonesia CGK&nbsp;→&nbsp;SOQ, 10–11 November 2025. Passenger 280357115 reschedules out of a
+      two-passenger booking. The old order reverses that passenger's fare, claws back their subsidy share,
+      retains a reschedule fee, and issues the remainder as a deposit — which the new order consumes.
+      Step through all eight events and watch the components move.
+    </p>
+    <div class="orderpair">
+      <span class="oid"><span>Order A · source</span><b>1328340013</b></span>
+      <span class="oid"><span>Order B · target</span><b>1328211390</b></span>
+      <span class="oid"><span>Refund</span><b>4534351</b></span>
+      <span class="oid"><span>Deposit</span><b>IDR 3,136,582</b></span>
+    </div>
+  </header>
+
+  <section class="scrub" aria-label="Event timeline">
+    <div class="scrub-head">
+      <h2>Event stream</h2>
+      <div class="ctrls">
+        <button class="btn" id="b-first" type="button">⏮ Start</button>
+        <button class="btn" id="b-prev" type="button">← Prev</button>
+        <button class="btn btn-go" id="b-next" type="button">Next →</button>
+      </div>
+    </div>
+    <div class="stops" id="stops" role="tablist"></div>
+    <div class="narr">
+      <div class="narr-meta">
+        <span class="k">Emitted at</span><span class="v" id="m-at"></span>
+        <span class="k">Event type</span><span class="v" id="m-type"></span>
+        <span class="k">Source file</span><span class="v" id="m-file"></span>
+      </div>
+      <div class="narr-body">
+        <h3 id="m-head"></h3>
+        <p id="m-note"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="fams" id="fams" aria-label="Version families"></section>
+
+  <section class="ledgers" id="ledgers" aria-label="Order component ledgers"></section>
+
+  <div class="key">
+    <span>Original charge</span>
+    <span class="k-rev">Reversal — refund event line</span>
+    <span class="k-fee">New charge from reschedule</span>
+    <span class="k-ins">Settlement instrument — not a charge</span>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Does the customer ledger close?</h2>
+      <p>Cash the customer moved, against value they actually received. Both sides are shown at the end of the replay.</p>
+    </div>
+    <div class="panel-body">
+      <div class="tblwrap">
+        <table class="recon">
+          <thead>
+            <tr><th>Cash out</th><th></th><th class="n">IDR</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Captured on order A</td><td class="why">Corporate billing, 10 Nov</td><td class="n">8,497,424</td></tr>
+            <tr><td>Captured on order B</td><td class="why">Balance after deposit applied, 11 Nov</td><td class="n">1,105,538</td></tr>
+            <tr class="total"><td>Total paid</td><td></td><td class="n">9,602,962</td></tr>
+          </tbody>
+          <thead>
+            <tr><th>Value received</th><th></th><th class="n">IDR</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Passenger 280357116 — flew original booking</td><td class="why">4,242,120 fare less 15,908 subsidy share</td><td class="n">4,226,212</td></tr>
+            <tr><td>Platform fee, order A</td><td class="why">Not refunded on reschedule</td><td class="n">45,000</td></tr>
+            <tr><td>Passenger 281900015 — new booking</td><td class="why">Full fare on order B</td><td class="n">4,242,120</td></tr>
+            <tr><td>Reschedule fee</td><td class="why">Retained from the refund on order A</td><td class="n">1,089,630</td></tr>
+            <tr class="total"><td>Total consumed</td><td></td><td class="n">9,602,962</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flag">
+        <span class="mk">Watch&nbsp;this</span>
+        <div>
+          <p><strong>The deposit is a settlement instrument, not a charge — but it lives in <code>pricing_components_fact</code>.</strong>
+          Order A's charges come to <span class="num">5,360,842</span>, which is exactly what it captured minus the deposit it released.
+          Sum <em>every</em> component instead and you get <span class="num">8,497,424</span> — the original captured amount, back again,
+          because <code>RefundDeposit</code> equals the reversals minus the fee and cancels them out.</p>
+          <p>Order B shows the mirror: charges of <span class="num">4,242,120</span>, but every component summed gives
+          <span class="num">1,105,538</span> — the cash still due, not the order's value. Same table, two different meanings of "total".
+          Either move both deposit lines to the payment layer, or tag them non-pricing and exclude them from every sum.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Component lineage</h2>
+      <p>Every reversal in the refund event points at the exact component it undoes, through <code style="font-family:var(--mono);font-size:12.5px">refund_of_component_semantic_id</code>. All four resolve.</p>
+    </div>
+    <div class="panel-body">
+      <div class="lin" id="lin"></div>
+    </div>
+  </section>
+
+  <p class="foot">
+    Replayed from <code>sample_events/*/flight-partial-reschedule-by-refund-1328340013-to-1328211390/</code>
+    through the UPRL ingestion pipeline. Every figure and semantic ID on this page was read back out of
+    <code>pricing_components_fact</code>, <code>payment_timeline</code> and <code>refund_timeline</code> after ingestion.
+  </p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var IDR = function(n){
+    var s = Math.abs(n).toLocaleString("en-US");
+    return (n < 0 ? "−" : "") + s;
+  };
+
+  /* Facts, keyed by the step at which they enter the store. */
+  var FACTS = [
+    // ---- Order A, pricing v1 (event 001)
+    {o:"A",step:0,v:1,type:"BaseFare",     amt:3332000,  dim:"pax 280357115", sid:"cs-1328340013-OD-1366814317-PAS-280357115-BaseFare",  role:"charge"},
+    {o:"A",step:0,v:1,type:"Tax",          amt:905120,   dim:"pax 280357115", sid:"cs-1328340013-OD-1366814317-PAS-280357115-Tax",       role:"charge"},
+    {o:"A",step:0,v:1,type:"Surcharge",    amt:5000,     dim:"pax 280357115", sid:"cs-1328340013-OD-1366814317-PAS-280357115-Surcharge", role:"charge"},
+    {o:"A",step:0,v:1,type:"Subsidy",      amt:-15908,   dim:"pax 280357115 · tiket", sid:"cs-1328340013-FUN-tiket-OD-1366814317-PAS-280357115-Subsidy", role:"charge"},
+    {o:"A",step:0,v:1,type:"BaseFare",     amt:3332000,  dim:"pax 280357116", sid:"cs-1328340013-OD-1366814317-PAS-280357116-BaseFare",  role:"charge"},
+    {o:"A",step:0,v:1,type:"Tax",          amt:905120,   dim:"pax 280357116", sid:"cs-1328340013-OD-1366814317-PAS-280357116-Tax",       role:"charge"},
+    {o:"A",step:0,v:1,type:"Surcharge",    amt:5000,     dim:"pax 280357116", sid:"cs-1328340013-OD-1366814317-PAS-280357116-Surcharge", role:"charge"},
+    {o:"A",step:0,v:1,type:"Subsidy",      amt:-15908,   dim:"pax 280357116 · tiket", sid:"cs-1328340013-FUN-tiket-OD-1366814317-PAS-280357116-Subsidy", role:"charge"},
+    {o:"A",step:0,v:1,type:"PlatformFee",  amt:45000,    dim:"order level",   sid:"cs-1328340013-ORDER-PlatformFee", role:"charge"},
+
+    // ---- Order A, pricing v2 (event 004 — RefundIssued)
+    {o:"A",step:3,v:2,type:"BaseFare",  amt:-3332000, dim:"pax 280357115", sid:"cs-1328340013-4534351-OD-1366814317-PAS-280357115-BaseFare",  role:"reversal",
+     of:"cs-1328340013-OD-1366814317-PAS-280357115-BaseFare"},
+    {o:"A",step:3,v:2,type:"Tax",       amt:-905120,  dim:"pax 280357115", sid:"cs-1328340013-4534351-OD-1366814317-PAS-280357115-Tax",       role:"reversal",
+     of:"cs-1328340013-OD-1366814317-PAS-280357115-Tax"},
+    {o:"A",step:3,v:2,type:"Surcharge", amt:-5000,    dim:"pax 280357115", sid:"cs-1328340013-4534351-OD-1366814317-PAS-280357115-Surcharge", role:"reversal",
+     of:"cs-1328340013-OD-1366814317-PAS-280357115-Surcharge"},
+    {o:"A",step:3,v:2,type:"Subsidy",   amt:15908,    dim:"pax 280357115 · tiket", sid:"cs-1328340013-4534351-FUN-tiket-OD-1366814317-PAS-280357115-Subsidy", role:"reversal",
+     of:"cs-1328340013-FUN-tiket-OD-1366814317-PAS-280357115-Subsidy",
+     note:"Clawback — the subsidy was tiket-funded, so it is not the customer's to get back. Positive, because it reduces what is refunded."},
+    {o:"A",step:3,v:2,type:"RescheduleFee", amt:1089630, dim:"detail 1366814317", sid:"cs-1328340013-4534351-OD-1366814317-RescheduleFee", role:"fee",
+     note:"Airline fee, retained out of the refund rather than billed to the new order."},
+    {o:"A",step:3,v:2,type:"RefundDeposit", amt:3136582, dim:"detail 1366814317", sid:"cs-1328340013-4534351-OD-1366814317-RefundDeposit", role:"instrument",
+     note:"4,242,120 gross − 15,908 subsidy clawback − 1,089,630 fee. Credit 1354654034, earmarked for order 1328211390."},
+
+    // ---- Order B, pricing v1 (event 006)
+    {o:"B",step:5,v:1,type:"BaseFare",  amt:3332000, dim:"pax 281900015", sid:"cs-1328211390-OD-1366912401-PAS-281900015-BaseFare",  role:"charge"},
+    {o:"B",step:5,v:1,type:"Tax",       amt:905120,  dim:"pax 281900015", sid:"cs-1328211390-OD-1366912401-PAS-281900015-Tax",       role:"charge"},
+    {o:"B",step:5,v:1,type:"Surcharge", amt:5000,    dim:"pax 281900015", sid:"cs-1328211390-OD-1366912401-PAS-281900015-Surcharge", role:"charge"},
+    {o:"B",step:5,v:1,type:"RefundDepositApplied", amt:-3136582, dim:"detail 1366912401", sid:"cs-1328211390-OD-1366912401-RefundDepositApplied", role:"instrument",
+     note:"The same credit, consumed. Order B's fare is 4,242,120; only 1,105,538 of it needs cash."}
+  ];
+
+  var STEPS = [
+    {n:"001", type:"PricingUpdated", at:"2025-11-10 11:00:00Z", order:"A",
+     file:"pricing_events/001-order-a-pricing-updated.json",
+     short:"Order A priced",
+     head:"Order A is priced for two passengers",
+     note:"Nine components land as pricing snapshot v1, totalling 8,497,424. The tiket-funded subsidy is carried per passenger (−15,908 each) rather than once at order level — that is what makes a single-passenger clawback expressible later."},
+
+    {n:"002", type:"PaymentLifecycle", at:"2025-11-10 11:05:00Z", order:"A",
+     file:"payment_timeline/002-order-a-payment-authorized.json",
+     short:"Payment authorized",
+     head:"8,497,424 authorized on corporate billing",
+     note:"Payment timeline v1. This is a separate version family from pricing — it counts on its own, per order, and never touches the pricing snapshot number."},
+
+    {n:"003", type:"PaymentLifecycle", at:"2025-11-10 11:05:00Z", order:"A",
+     file:"payment_timeline/003-order-a-payment-captured.json",
+     short:"Payment captured",
+     head:"Captured in full, matching the component total",
+     note:"Payment timeline v2. Captured 8,497,424 against components summing to 8,497,424 — the two layers agree exactly, which is the baseline everything after this is measured against."},
+
+    {n:"004", type:"RefundIssued", at:"2025-11-11 04:20:21Z", order:"A",
+     file:"refund_components/004-order-a-refund-issued-with-reschedule.json",
+     short:"Refund issued",
+     head:"Passenger 280357115 reverses out — six new components",
+     note:"Pricing snapshot v2 on the same order. Three fare lines reverse, the subsidy share is clawed back (+15,908), the reschedule fee is retained (1,089,630), and 3,136,582 is issued as a deposit. Note the version: a refund is a new pricing version, not a new version family."},
+
+    {n:"005", type:"refund.closed", at:"2025-11-11 04:20:21Z", order:"A",
+     file:"refund_timeline/005-order-a-refund-closed.json",
+     short:"Refund closed",
+     head:"Refund timeline opens and closes at 4,226,212",
+     note:"Refund timeline v1 — a third independent version family, scoped to refund 4534351. Its amount is the gross fare less the subsidy clawback, before the reschedule fee. That is the figure the customer sees as “Previous payment” on the new order."},
+
+    {n:"006", type:"PricingUpdated", at:"2025-11-11 04:25:00Z", order:"B",
+     file:"pricing_events/006-order-b-pricing-updated.json",
+     short:"Order B priced",
+     head:"New booking priced, deposit applied",
+     note:"A fresh order, so pricing restarts at v1. Same fare as before — 4,242,120 — and the deposit arrives as a negative component rather than as a payment, which is where the two orders start meaning different things by “total”."},
+
+    {n:"007", type:"PaymentLifecycle", at:"2025-11-11 11:05:00Z", order:"B",
+     file:"payment_timeline/007-order-b-payment-authorized.json",
+     short:"Payment authorized",
+     head:"1,105,538 authorized on order B",
+     note:"Payment timeline v1 for order B. Only the balance after the deposit is authorized — the deposit itself never passes through the payment rail."},
+
+    {n:"008", type:"PaymentLifecycle", at:"2025-11-11 11:05:00Z", order:"B",
+     file:"payment_timeline/008-order-b-payment-captured.json",
+     short:"Payment captured",
+     head:"Captured — the reschedule is settled",
+     note:"Payment timeline v2. Across both orders the customer paid 9,602,962 and consumed 9,602,962 of value. The ledger closes."}
+  ];
+
+  /* Per-step version-family state: [pricing, payment, refund] per order; null = not yet opened. */
+  var FAMS = [
+    {ap:1,aPay:null,aRef:null,bp:null,bPay:null, bump:["ap"]},
+    {ap:1,aPay:1,   aRef:null,bp:null,bPay:null, bump:["aPay"]},
+    {ap:1,aPay:2,   aRef:null,bp:null,bPay:null, bump:["aPay"]},
+    {ap:2,aPay:2,   aRef:null,bp:null,bPay:null, bump:["ap"]},
+    {ap:2,aPay:2,   aRef:1,   bp:null,bPay:null, bump:["aRef"]},
+    {ap:2,aPay:2,   aRef:1,   bp:1,   bPay:null, bump:["bp"]},
+    {ap:2,aPay:2,   aRef:1,   bp:1,   bPay:1,    bump:["bPay"]},
+    {ap:2,aPay:2,   aRef:1,   bp:1,   bPay:2,    bump:["bPay"]}
+  ];
+
+  /* Payment / refund timeline state per step, for the ledger footers. */
+  var MONEY = [
+    {aCap:0,aAuth:0,      bCap:0,bAuth:0},
+    {aCap:0,aAuth:8497424,bCap:0,bAuth:0},
+    {aCap:8497424,aAuth:8497424,bCap:0,bAuth:0},
+    {aCap:8497424,aAuth:8497424,bCap:0,bAuth:0},
+    {aCap:8497424,aAuth:8497424,bCap:0,bAuth:0},
+    {aCap:8497424,aAuth:8497424,bCap:0,bAuth:0},
+    {aCap:8497424,aAuth:8497424,bCap:0,bAuth:1105538},
+    {aCap:8497424,aAuth:8497424,bCap:1105538,bAuth:1105538}
+  ];
+
+  var ORDERS = {
+    A:{id:"1328340013",tag:"Order A · source booking",sub:"CGK → SOQ · 15 Nov 2025 · 2 passengers · detail 1366814317"},
+    B:{id:"1328211390",tag:"Order B · rebooking",     sub:"CGK → SOQ · 1 passenger · detail 1366912401"}
+  };
+
+  var cur = STEPS.length - 1;
+  var prevVisible = null;
+
+  var elStops = document.getElementById("stops");
+  var elFams  = document.getElementById("fams");
+  var elLed   = document.getElementById("ledgers");
+
+  /* ---- build the scrubber once ---- */
+  STEPS.forEach(function(s, i){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "stop";
+    b.setAttribute("role","tab");
+    b.innerHTML = '<span class="stop-n">' + s.n + '</span><span class="stop-t">' + s.short + '</span>';
+    b.addEventListener("click", function(){ go(i); });
+    elStops.appendChild(b);
+  });
+
+  function famCard(lab, val, scope, bumped){
+    var cls = "fam" + (val === null ? " idle" : (bumped ? " bump" : ""));
+    return '<div class="' + cls + '"><span class="lab">' + lab + '</span>' +
+           '<span class="val">' + (val === null ? "—" : "v" + val) + '</span>' +
+           '<span class="scope">' + scope + '</span></div>';
+  }
+
+  function renderFams(){
+    var f = FAMS[cur];
+    var bp = function(k){ return f.bump.indexOf(k) > -1; };
+    elFams.innerHTML =
+      famCard("Pricing · A", f.ap,   "per order 1328340013", bp("ap")) +
+      famCard("Payment · A", f.aPay, "per order 1328340013", bp("aPay")) +
+      famCard("Refund",      f.aRef, "per refund 4534351",   bp("aRef")) +
+      famCard("Pricing · B", f.bp,   "per order 1328211390", bp("bp")) +
+      famCard("Payment · B", f.bPay, "per order 1328211390", bp("bPay"));
+  }
+
+  function renderLedger(key){
+    var meta = ORDERS[key];
+    var rows = FACTS.filter(function(f){ return f.o === key && f.step <= cur; });
+    var reversed = {};
+    rows.forEach(function(f){ if (f.of) reversed[f.of] = f; });
+
+    var charges = 0, instruments = 0;
+    rows.forEach(function(f){
+      if (f.role === "instrument") instruments += f.amt; else charges += f.amt;
+    });
+
+    var html = '<div class="led-head"><span class="tag">' + meta.tag + '</span>' +
+               '<h2>' + meta.id + '</h2><p class="sub">' + meta.sub + '</p></div>';
+
+    if (!rows.length){
+      html += '<p class="empty">No components yet — this order has not been priced.</p>';
+      html += '<div class="led-foot"><div class="foot-line muted"><span class="lbl">Charges</span><span class="amt">—</span></div></div>';
+      return html;
+    }
+
+    html += '<ul class="rows">';
+    rows.forEach(function(f){
+      var cls = "row role-" + f.role;
+      if (reversed[f.sid]) cls += " reversed";
+      if (prevVisible && prevVisible.indexOf(f.sid) === -1) cls += " fresh";
+      var badge = "";
+      if (reversed[f.sid]) badge = '<span class="badge badge-rev">reversed v' + reversed[f.sid].v + '</span>';
+      else if (f.step === cur) badge = '<span class="badge badge-new">new</span>';
+
+      html += '<li class="' + cls + '"><div class="row-l">' +
+              '<span class="row-v">v' + f.v + '</span>' +
+              '<span class="row-type">' + f.type + '</span>' +
+              '<span class="row-dim">' + f.dim + '</span>' + badge +
+              '<div class="row-sid" title="' + f.sid + '">' + f.sid + '</div>' +
+              '</div><div class="row-amt">' + IDR(f.amt) + '</div>' +
+              (f.note ? '<div class="row-note">' + f.note + '</div>' : '') +
+              '</li>';
+    });
+    html += '</ul>';
+
+    var m = MONEY[cur];
+    var cap  = key === "A" ? m.aCap  : m.bCap;
+    var auth = key === "A" ? m.aAuth : m.bAuth;
+
+    html += '<div class="led-foot">' +
+      '<div class="foot-line strong"><span class="lbl">Charges</span><span class="amt">' + IDR(charges) + '</span></div>';
+    if (instruments !== 0){
+      html += '<div class="foot-line"><span class="lbl" style="color:var(--instrument)">' +
+              (key === "A" ? "Deposit issued" : "Deposit applied") +
+              '</span><span class="amt" style="color:var(--instrument)">' + IDR(instruments) + '</span></div>' +
+              '<div class="foot-line muted"><span class="lbl">All components summed</span><span class="amt">' +
+              IDR(charges + instruments) + '</span></div>';
+    }
+    html += '<div class="foot-line"><span class="lbl">Authorized</span><span class="amt">' + (auth ? IDR(auth) : "—") + '</span></div>' +
+            '<div class="foot-line"><span class="lbl">Captured</span><span class="amt">' + (cap ? IDR(cap) : "—") + '</span></div>';
+    html += '</div>';
+    return html;
+  }
+
+  function renderLineage(){
+    var links = FACTS.filter(function(f){ return f.of; });
+    var byId = {};
+    FACTS.forEach(function(f){ byId[f.sid] = f; });
+    document.getElementById("lin").innerHTML = links.map(function(f){
+      var src = byId[f.of];
+      return '<div class="lin-row">' +
+        '<div class="from"><div class="sid" title="' + f.of + '">' + f.of + '</div>' +
+        '<span class="amt">' + IDR(src.amt) + '</span></div>' +
+        '<div class="arw" aria-hidden="true">→</div>' +
+        '<div class="to"><div class="sid" title="' + f.sid + '">' + f.sid + '</div>' +
+        '<span class="amt">' + IDR(f.amt) + '</span></div>' +
+        '</div>';
+    }).join("");
+  }
+
+  function render(){
+    var s = STEPS[cur];
+
+    var stops = elStops.children;
+    for (var i = 0; i < stops.length; i++){
+      stops[i].className = "stop" + (i <= cur ? " done" : "") + (i === cur ? " here" : "");
+      stops[i].setAttribute("aria-selected", i === cur ? "true" : "false");
+    }
+
+    document.getElementById("m-at").textContent   = s.at;
+    document.getElementById("m-type").textContent = s.type;
+    document.getElementById("m-file").textContent = s.file;
+    document.getElementById("m-head").textContent = s.head;
+    document.getElementById("m-note").textContent = s.note;
+
+    renderFams();
+
+    var aHtml = renderLedger("A");
+    var bHtml = renderLedger("B");
+    elLed.innerHTML =
+      '<article class="ledger">' + aHtml + '</article>' +
+      '<article class="ledger' + (cur < 5 ? " dim" : "") + '">' + bHtml + '</article>';
+
+    prevVisible = FACTS.filter(function(f){ return f.step <= cur; }).map(function(f){ return f.sid; });
+
+    document.getElementById("b-prev").disabled  = cur === 0;
+    document.getElementById("b-first").disabled = cur === 0;
+    document.getElementById("b-next").disabled  = cur === STEPS.length - 1;
+  }
+
+  function go(i){
+    if (i < 0 || i > STEPS.length - 1) return;
+    prevVisible = FACTS.filter(function(f){ return f.step <= cur; }).map(function(f){ return f.sid; });
+    cur = i;
+    render();
+  }
+
+  document.getElementById("b-next").addEventListener("click", function(){ go(cur + 1); });
+  document.getElementById("b-prev").addEventListener("click", function(){ go(cur - 1); });
+  document.getElementById("b-first").addEventListener("click", function(){ go(0); });
+  document.addEventListener("keydown", function(e){
+    if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    if (e.key === "ArrowRight"){ go(cur + 1); }
+    else if (e.key === "ArrowLeft"){ go(cur - 1); }
+  });
+
+  renderLineage();
+  render();
+})();
+</script>
+</body>
+</html>
